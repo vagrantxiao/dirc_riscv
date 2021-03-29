@@ -5,10 +5,8 @@ This is a temporary repo for DIRC with [picorv32](https://github.com/cliffordwol
 ## 1 Tool Setup
 
 ### 1.1 Vitis Preparation
-The demo is developed with [Vitis 2020.1](https://www.xilinx.com/support/download/index.html/content/xilinx/en/downloadNav/vivado-design-tools/2020-1.html) 
-and [Ultra96v2 board](https://www.96boards.org/product/ultra96/).
-The default Vitis does not include Ultra96v2 BSP. You can copy the dir **ultra96v2**
-under [BSP](./BSP) to \<Vitis Installation DIR\>/Vivado/2020.1/data/boards/board_files.
+The demo is developed with [Vitis 2018.2](https://www.xilinx.com/support/download/index.html/content/xilinx/en/downloadNav/vivado-design-tools/2020-1.html) 
+and [ZCU102 board](https://www.96boards.org/product/ultra96/).
 
 ### 1.2 RISC-V Tool Praparation
 
