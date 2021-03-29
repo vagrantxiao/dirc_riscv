@@ -10,5 +10,4 @@ void wfilter2
   hls::stream<ap_uint<32> > & Output_2,
   hls::stream<ap_uint<32> > & Output_3
 );
-#pragma map_target = HW page_num = 16 inst_mem_size = 65536
-#pragma debug_port = 1
+#pragma map_target =riscv page_num = 16 inst_mem_size = 65536

@@ -1,6 +1,6 @@
 module picorv32_wrapper#(
-  //parameter MEM_SIZE = 128*1024/4
   parameter MEM_SIZE = 4096,
+  parameter IS_TRIPLE = 0,
 parameter ADDR_BITS = 13
   )(
   input clk,
@@ -75,6 +75,7 @@ parameter ADDR_BITS = 13
  
  
 	picorv32 #(
+        .MEM_SIZE(MEM_SIZE),
         .ADDR_BITS(ADDR_BITS)
 	) uut (
 	.clk         (clk        ),
@@ -158,6 +159,7 @@ parameter ADDR_BITS = 13
         
         
 	picorv_mem#(
+        .IS_TRIPLE(IS_TRIPLE),
         .MEM_SIZE(MEM_SIZE),
         .ADDR_BITS(ADDR_BITS)
 	) picorv_mem_inst (

@@ -59,23 +59,16 @@ resize_pblock [get_pblocks p_26] -add {RAMB36_X2Y60:RAMB36_X3Y71}
 set_property SNAPPING_MODE ON [get_pblocks p_26]
 
 
-create_pblock p_25
-add_cells_to_pblock [get_pblocks p_25] [get_cells -quiet [list floorplan_static_i/leaf_empty_25/inst]]
-resize_pblock [get_pblocks p_25] -add {SLICE_X0Y360:SLICE_X10Y419}
-resize_pblock [get_pblocks p_25] -add {DSP48E2_X0Y144:DSP48E2_X1Y167}
-resize_pblock [get_pblocks p_25] -add {GTHE4_CHANNEL_X0Y12:GTHE4_CHANNEL_X0Y15}
-resize_pblock [get_pblocks p_25] -add {GTHE4_COMMON_X0Y3:GTHE4_COMMON_X0Y3}
-resize_pblock [get_pblocks p_25] -add {RAMB18_X0Y144:RAMB18_X1Y167}
-resize_pblock [get_pblocks p_25] -add {RAMB36_X0Y72:RAMB36_X1Y83}
-set_property SNAPPING_MODE ON [get_pblocks p_25]
 
 
 create_pblock p_24
 add_cells_to_pblock [get_pblocks p_24] [get_cells -quiet [list floorplan_static_i/leaf_empty_24/inst]]
-resize_pblock [get_pblocks p_24] -add {SLICE_X11Y360:SLICE_X27Y419}
-resize_pblock [get_pblocks p_24] -add {DSP48E2_X2Y144:DSP48E2_X4Y167}
-resize_pblock [get_pblocks p_24] -add {RAMB18_X2Y144:RAMB18_X3Y167}
-resize_pblock [get_pblocks p_24] -add {RAMB36_X2Y72:RAMB36_X3Y83}
+resize_pblock [get_pblocks p_24] -add {SLICE_X0Y360:SLICE_X27Y419}
+resize_pblock [get_pblocks p_24] -add {DSP48E2_X0Y144:DSP48E2_X4Y167}
+resize_pblock [get_pblocks p_24] -add {GTHE4_CHANNEL_X0Y12:GTHE4_CHANNEL_X0Y15}
+resize_pblock [get_pblocks p_24] -add {GTHE4_COMMON_X0Y3:GTHE4_COMMON_X0Y3}
+resize_pblock [get_pblocks p_24] -add {RAMB18_X0Y144:RAMB18_X3Y167}
+resize_pblock [get_pblocks p_24] -add {RAMB36_X0Y72:RAMB36_X3Y83}
 set_property SNAPPING_MODE ON [get_pblocks p_24]
 
 
@@ -144,10 +137,10 @@ set_property SNAPPING_MODE ON [get_pblocks p_9]
 
 create_pblock p_3
 add_cells_to_pblock [get_pblocks p_3] [get_cells -quiet [list floorplan_static_i/leaf_empty_3/inst]]
-resize_pblock [get_pblocks p_3] -add {SLICE_X52Y0:SLICE_X69Y59}
-resize_pblock [get_pblocks p_3] -add {DSP48E2_X10Y0:DSP48E2_X13Y23}
-resize_pblock [get_pblocks p_3] -add {RAMB18_X7Y0:RAMB18_X8Y23}
-resize_pblock [get_pblocks p_3] -add {RAMB36_X7Y0:RAMB36_X8Y11}
+resize_pblock [get_pblocks p_3] -add {SLICE_X46Y0:SLICE_X63Y59}
+resize_pblock [get_pblocks p_3] -add {DSP48E2_X9Y0:DSP48E2_X12Y23}
+resize_pblock [get_pblocks p_3] -add {RAMB18_X6Y0:RAMB18_X7Y23}
+resize_pblock [get_pblocks p_3] -add {RAMB36_X6Y0:RAMB36_X7Y11}
 set_property SNAPPING_MODE ON [get_pblocks p_3]
 
 create_pblock p_4
@@ -188,11 +181,11 @@ set_property SNAPPING_MODE ON [get_pblocks p_6]
 
 create_pblock p_8
 add_cells_to_pblock [get_pblocks p_8] [get_cells -quiet [list floorplan_static_i/leaf_empty_8/inst]]
-resize_pblock [get_pblocks p_8] -add {SLICE_X70Y0:SLICE_X95Y59}
-resize_pblock [get_pblocks p_8] -add {DSP48E2_X14Y0:DSP48E2_X17Y23}
+resize_pblock [get_pblocks p_8] -add {SLICE_X64Y0:SLICE_X95Y59}
+resize_pblock [get_pblocks p_8] -add {DSP48E2_X13Y0:DSP48E2_X17Y23}
 resize_pblock [get_pblocks p_8] -add {IOB_X0Y0:IOB_X0Y37}
-resize_pblock [get_pblocks p_8] -add {RAMB18_X9Y0:RAMB18_X12Y23}
-resize_pblock [get_pblocks p_8] -add {RAMB36_X9Y0:RAMB36_X12Y11}
+resize_pblock [get_pblocks p_8] -add {RAMB18_X8Y0:RAMB18_X12Y23}
+resize_pblock [get_pblocks p_8] -add {RAMB36_X8Y0:RAMB36_X12Y11}
 set_property SNAPPING_MODE ON [get_pblocks p_8]
 
 
@@ -226,10 +219,10 @@ set_property SNAPPING_MODE ON [get_pblocks p_11]
 
 create_pblock pblock_bft0
 add_cells_to_pblock [get_pblocks pblock_bft0] [get_cells -quiet [list floorplan_static_i/bft0]]
-resize_pblock [get_pblocks pblock_bft0] -add {SLICE_X37Y0:SLICE_X51Y239}
-resize_pblock [get_pblocks pblock_bft0] -add {DSP48E2_X7Y0:DSP48E2_X9Y95}
-resize_pblock [get_pblocks pblock_bft0] -add {RAMB18_X5Y0:RAMB18_X6Y95}
-resize_pblock [get_pblocks pblock_bft0] -add {RAMB36_X5Y0:RAMB36_X6Y47}
+resize_pblock [get_pblocks pblock_bft0] -add {SLICE_X46Y60:SLICE_X51Y239 SLICE_X37Y0:SLICE_X45Y239}
+resize_pblock [get_pblocks pblock_bft0] -add {DSP48E2_X9Y24:DSP48E2_X9Y95 DSP48E2_X7Y0:DSP48E2_X8Y95}
+resize_pblock [get_pblocks pblock_bft0] -add {RAMB18_X6Y24:RAMB18_X6Y95 RAMB18_X5Y0:RAMB18_X5Y95}
+resize_pblock [get_pblocks pblock_bft0] -add {RAMB36_X6Y12:RAMB36_X6Y47 RAMB36_X5Y0:RAMB36_X5Y47}
 set_property SNAPPING_MODE ON [get_pblocks pblock_bft0]
 
 create_pblock p_12
@@ -304,8 +297,6 @@ set_property DONT_TOUCH true [get_cells floorplan_static_i/bft2]
 set_property HD.RECONFIGURABLE true [get_cells floorplan_static_i/bft2]
 set_property DONT_TOUCH true [get_cells floorplan_static_i/leaf_empty_24/inst]
 set_property HD.RECONFIGURABLE true [get_cells floorplan_static_i/leaf_empty_24/inst]
-set_property DONT_TOUCH true [get_cells floorplan_static_i/leaf_empty_25/inst]
-set_property HD.RECONFIGURABLE true [get_cells floorplan_static_i/leaf_empty_25/inst]
 set_property DONT_TOUCH true [get_cells floorplan_static_i/leaf_empty_26/inst]
 set_property HD.RECONFIGURABLE true [get_cells floorplan_static_i/leaf_empty_26/inst]
 set_property DONT_TOUCH true [get_cells floorplan_static_i/leaf_empty_27/inst]
@@ -327,6 +318,10 @@ set_property HD.RECONFIGURABLE true [get_cells floorplan_static_i/bft0]
 
 set_property DONT_TOUCH true [get_cells floorplan_static_i/bft3]
 set_property HD.RECONFIGURABLE true [get_cells floorplan_static_i/bft3]
+
+
+
+
 
 
 

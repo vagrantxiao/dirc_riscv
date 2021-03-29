@@ -4,12 +4,12 @@
 #prj_name=digit_reg_small
 #prj_name=spam_filter
 #prj_name=spam_filter_small
-prj_name=optical_flow
+#prj_name=optical_flow
 #prj_name=optical_flow_origin
 #prj_name=rendering
 #prj_name=data_move
 #prj_name=data_shift
-#prj_name=face_detection
+prj_name=face_detection
 
 
 src=./common/verilog_src
@@ -66,7 +66,7 @@ $(download_target): $(operators_bit_targets)
 # generate bitstream for each operator
 $(operators_bit_targets):$(ws_bit)/%.bit:$(ws_syn)/%/page_netlist.dcp $(ws_overlay)/overlay.dcp 
 	python2 pr_flow.py $(prj_name) -impl -op $(basename $(notdir $@))
-	cd $(ws_impl)/$(basename $(notdir $@)) && ./qsub_run.sh
+	cd $(ws_impl)/$(basename $(notdir $@)) && ./main.sh
 
 syn: $(operators_syn_targets)
 
@@ -74,13 +74,13 @@ syn: $(operators_syn_targets)
 $(operators_syn_targets):$(ws_syn)/%/page_netlist.dcp:$(ws_hls)/runLog%.log $(ws_overlay)/overlay.dcp
 	python2 pr_flow.py $(prj_name) -syn -op $(subst runLog,,$(basename $(notdir $<)))
 	#cd $(ws_syn)/$(subst runLog,,$(basename $(notdir $<)))/riscv && ./qsub_run.sh
-	cd $(ws_syn)/$(subst runLog,,$(basename $(notdir $<))) && ./run.sh
+	cd $(ws_syn)/$(subst runLog,,$(basename $(notdir $<))) && ./main.sh
 
 
 # High-Level-Synthesis from C to Verilog
 $(operators_hls_targets):$(ws_hls)/runLog%.log:$(operators_dir)/%.cpp $(operators_dir)/%.h
 	python2 pr_flow.py $(prj_name) -hls -op $(basename $(notdir $<))
-	cd $(ws_hls) && ./run_$(basename $(notdir $<)).sh
+	cd $(ws_hls) && ./main_$(basename $(notdir $<)).sh
 
 mono_prj: $(mono_bft_target)
 
@@ -112,7 +112,11 @@ $(ws_sdk): $(src)/*.cc $(src)/*.h
 	cp -rf  $^ $@
 
 
+HW:
+	python2 ./pr_flow/riscv2HW.py $(prj_name)
 
+riscv:
+	python2 ./pr_flow/HW2riscv.py $(prj_name)
 
 
 

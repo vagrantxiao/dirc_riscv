@@ -80,7 +80,7 @@ class syn(gen_basic):
     self.shell.write_lines(self.syn_dir+'/'+operator+'/leaf.v', self.verilog.return_page_v_list(page_num, operator, input_num, output_num, True), False)
 
     # Prepare the shell script to run vivado
-    self.shell.write_lines(self.syn_dir+'/'+operator+'/run.sh', self.shell.return_run_sh_list(self.prflow_params['Xilinx_dir'], 'syn_page.tcl'), True)
+    self.shell.write_lines(self.syn_dir+'/'+operator+'/run.sh', self.shell.return_run_sh_list(self.prflow_params['Xilinx_dir'], 'syn_page.tcl', self.prflow_params['back_end']), True)
 
   def ceiling_mem_size(self, size_in):
     size_out = 1
@@ -194,7 +194,10 @@ class syn(gen_basic):
     # modify the run.sh shell for riscv
     self.shell.write_lines(self.syn_dir+'/'+operator+'/leaf.v', self.verilog.return_page_v_list(page_num, operator, input_num, output_num, True, True), False)
     if riscv_bit == 'empty':
-      self.shell.replace_lines(self.syn_dir+'/'+operator+'/run.sh', {'vivado': 'source '+self.prflow_params['Xilinx_dir']+'\nvivado -mode batch -source syn_page.tcl\n'} )
+      if self.prflow_params['back_end'] == 'slurm':
+        self.shell.replace_lines(self.syn_dir+'/'+operator+'/run.sh', {'vivado': 'module load '+self.prflow_params['Xilinx_dir']+'\nvivado -mode batch -source syn_page.tcl\n'} )
+      else:
+        self.shell.replace_lines(self.syn_dir+'/'+operator+'/run.sh', {'vivado': 'source '+self.prflow_params['Xilinx_dir']+'\nvivado -mode batch -source syn_page.tcl\n'} )
       self.shell.replace_lines(self.syn_dir+'/'+operator+'/src/picorv32_wrapper.v', {'parameter IS_TRIPLE': 'parameter IS_TRIPLE = '+str(is_triple)+','})
       self.shell.replace_lines(self.syn_dir+'/'+operator+'/src/picorv32_wrapper.v', {'parameter MEM_SIZE': 'parameter MEM_SIZE = '+str(inst_mem_size)+','})
       self.shell.replace_lines(self.syn_dir+'/'+operator+'/src/picorv32_wrapper.v', {'parameter ADDR_BITS': 'parameter ADDR_BITS = '+str(inst_mem_bits)})
@@ -208,6 +211,16 @@ class syn(gen_basic):
   def create_page(self, operator):
     self.shell.re_mkdir(self.syn_dir+'/'+operator)
     map_target, page_num, input_num, output_num =  self.return_map_target(operator)
+    self.shell.write_lines(self.syn_dir+'/'+operator+'/main.sh', self.shell.return_main_sh_list(
+                                                                                                  './run.sh', 
+                                                                                                  self.prflow_params['back_end'], 
+                                                                                                  'hls_'+operator, 
+                                                                                                  'syn_'+operator, 
+                                                                                                  self.prflow_params['grid'], 
+                                                                                                  'qsub@qsub.com',
+                                                                                                  self.prflow_params['mem'], 
+                                                                                                  self.prflow_params['node'], 
+                                                                                                   ), True)
  
     if map_target == 'HW': 
       self.prepare_HW(operator, page_num, input_num, output_num)

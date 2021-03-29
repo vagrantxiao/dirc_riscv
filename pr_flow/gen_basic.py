@@ -31,6 +31,11 @@ class _shell:
   def return_qsub_command_str(self, shell_file='./qsub_run', hold_jid='NONE', name='NONE', q='70s', email='qsub@qsub.com', MEM='2G', node_num='1'):
     return ('qsub -N '+name + ' -q ' + q + ' -hold_jid ' + hold_jid + ' -m abe -M ' + email + ' -l mem='+MEM + ' -pe onenode '+node_num + '  -cwd '+ shell_file)
 
+  # return the slurm command according to the input parameters
+  def return_slurm_command_str(self, shell_file='./qsub_run', hold_jid='NONE', name='NONE', q='70s', email='qsub@qsub.com', MEM='2G', node_num='1'):
+    return ('sbatch --ntasks=1 --cpus-per-task='+node_num+' --mem-per-cpu='+MEM+' --job-name='+name+' --dependency=$(squeue --noheader --format %i --user=$USER --name '+hold_jid+'| sed -n -e \'H;${x;s/\\n/,/g;s/^,//;p;}\') '+shell_file)
+
+
   def get_file_name(self, file_dir):
   # return a file list under a file_dir
     for root, dirs, files in os.walk(file_dir):
@@ -97,26 +102,40 @@ class _shell:
   def cp_file(self, src_file, dst_file):
      os.system('cp -rf '+src_file+' '+dst_file)
 
-  def return_run_sh_list(self, vivado_dir, tcl_file):
-    return ([
-      '#!/bin/bash -e',
-      'source ' + vivado_dir,
-      'vivado -mode batch -source ' + tcl_file,
-      ''])
-
-  def return_run_hls_sh_list(self, vivado_dir, tcl_file):
-    return ([
-      '#!/bin/bash -e',
-      'source ' + vivado_dir,
-      'vivado_hls -f ' + tcl_file,
-      ''])
+  def return_run_sh_list(self, vivado_dir, tcl_file, back_end='qsub'):
+    out_file = []
+    out_file.append('#!/bin/bash -e')
+    print back_end, '================='
+    if (back_end == 'slurm'):
+      out_file.append('module load ' + vivado_dir)
+      out_file.append('srun vivado -mode batch -source  ' + tcl_file)
+    else:
+      out_file.append('source ' + vivado_dir)
+      out_file.append('vivado -mode batch -source  ' + tcl_file)
+    return out_file 
 
 
-  def return_main_sh_list(self, run_file='run.sh'):
-    return ([
-      '#!/bin/bash -e',
-      './' + run_file,
-      ''])
+  def return_run_hls_sh_list(self, vivado_dir, tcl_file, back_end='qsub'):
+    out_file = []
+    out_file.append('#!/bin/bash -e')
+    if (back_end == 'slurm'):
+      out_file.append('module load ' + vivado_dir)
+      out_file.append('srun vivado_hls -f ' + tcl_file)
+    else:
+      out_file.append('source ' + vivado_dir)
+      out_file.append('vivado_hls -f ' + tcl_file)
+    return out_file 
+
+  def return_main_sh_list(self, run_file='run.sh', back_end='qsub', hold_jid='NONE', name='NONE', q='70s', email='qsub@qsub.com', MEM='2G', node_num='1'):
+    out_list = []
+    out_list.append('#!/bin/bash -e')
+    if back_end == 'qsub':
+      out_list.append(self.return_qsub_command_str(run_file, hold_jid, name, q, email, MEM, node_num))
+    elif back_end == 'slurm':
+      out_list.append(self.return_slurm_command_str(run_file, hold_jid, name, q, email, MEM, node_num))
+    else:
+      out_list.append(run_file)
+    return (out_list)
 
   def return_empty_sh_list(self):
     return ([

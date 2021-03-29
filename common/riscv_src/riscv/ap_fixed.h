@@ -470,6 +470,41 @@ class ap_fixed{
 		}
 
 
+		ap_fixed<_AP_W, _AP_I> operator / (int op){
+			ap_fixed<_AP_W, _AP_I> fix_out;			// final results array for multiplication
+			unsigned char is_minus_out;
+			int i;
+			int carry;
+			cp_array(fix_out.data, this->data, BYTE_SIZE(_AP_W));
+			is_minus_out = (data[BYTE_SIZE(_AP_W)-1] >> (_AP_W-((BYTE_SIZE(_AP_W)-1)<<3)-1)) & 0x01;
+
+			// if it is a minus number, convert it back to original number
+			if(is_minus_out){
+				array_sub1(fix_out.data, BYTE_SIZE(_AP_W));
+				array_inv(fix_out.data,  BYTE_SIZE(_AP_W));
+			}
+
+			// Do the division byte by byte
+			carry = 0;
+			for(i=(BYTE_SIZE(_AP_W))-1; i>=0; i--){
+				carry =  (carry<<8)+fix_out.data[i];
+				fix_out.data[i] = carry / op;
+				carry =  carry % op;
+			}
+
+			// if the residue is bigger than 8, then round up.
+			// Otherwise, round down
+			fix_out.data[0] = (carry>8)? fix_out.data[0]+1 : fix_out.data[0];
+
+			// if is a minus number, convert it back to 2'complementary number
+			if(is_minus_out){
+				array_inv(fix_out.data,  BYTE_SIZE(_AP_W));
+				array_add1(fix_out.data, BYTE_SIZE(_AP_W));
+			}
+			return fix_out;
+		}
+
+
 
 		ap_fixed<_AP_W, _AP_I> operator / (ap_fixed<_AP_W, _AP_I> op){
 			// fix_out = *this / op2;

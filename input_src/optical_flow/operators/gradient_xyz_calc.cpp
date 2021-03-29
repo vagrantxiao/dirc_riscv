@@ -23,7 +23,7 @@ void gradient_xyz_calc(//input_t frame[MAX_HEIGHT][MAX_WIDTH],
 	// window buffer
 	hls::Window<5,5,input_t> window;
 
-	const int GRAD_WEIGHTS[] =  {1,-8,0,8,-1};
+	ap_fixed<17, 9> GRAD_WEIGHTS[] =  {1,-8,0,8,-1};
 	#ifdef RISCV
 		hls::stream_local<databus_t> gradient_z;
 	#else

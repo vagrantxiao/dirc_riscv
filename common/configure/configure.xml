@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-  <spec name = "riscv_dir"          value = "/opt/riscv32" />
+  <spec name = "riscv_dir"          value = "/home/ylxiao_seas_upenn_edu/RISCV/riscv32" />
   <!--specifications for pr_flow tool-->
-  <spec name = "Xilinx_dir"         value = "/opt/Xilinx/SDx/2018.2/settings64.sh" />
+  <spec name = "Xilinx_dir"         value = "xilinx/2018.2" />
   <!--spec name = "Xilinx_dir"         value = "/scratch/unsafe/SDSoC/SDx/2018.2/settings64.sh" -->
   <spec name = "board" value = "zcu102" />
   <!--spec name = "board"              value = "u96" -->
@@ -25,11 +25,13 @@
   <spec name = "mono_bft_regen"     value = "0" />
   <spec name = "mono_regen"         value = "0" />
   <spec name = "config_regen"       value = "1" />
-  <spec name = "qsub_grid"          value = "70s" />
+  <spec name = "grid"               value = "70s" />
   <spec name = "maxThreads"         value = "8" />
+  <spec name = "back_end"           value = "slurm" />
   <spec name = "maxJobs"            value = "32" />
-  <spec name = "qsub_Nodes"         value = "10" />
-  <spec name = "MEM"                value = "2G" />
+  <spec name = "node"               value = "2" />
+  <spec name = "mem"                value = "7500mb" />
+  <!--spec name = "mem"                value = "8G" -->
   <spec name = "PR_mode"            value = "noquick" />
   <spec name = "packet_bits"        value = "49" />
   <spec name = "addr_bits"          value = "5" />

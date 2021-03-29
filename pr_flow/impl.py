@@ -12,7 +12,20 @@ class impl(gen_basic):
   def create_page(self, operator, page_num):
     self.shell.re_mkdir(self.pr_dir+'/'+operator)
     self.shell.write_lines(self.pr_dir+'/'+operator+'/impl_'+operator+'.tcl', self.tcl.return_impl_tcl_list(operator, page_num, False))
-    self.shell.write_lines(self.pr_dir+'/'+operator+'/qsub_run.sh', self.shell.return_run_sh_list(self.prflow_params['Xilinx_dir'], 'impl_'+operator+'.tcl'), True)
+    self.shell.write_lines(self.pr_dir+'/'+operator+'/run.sh', self.shell.return_run_sh_list(self.prflow_params['Xilinx_dir'], 'impl_'+operator+'.tcl', self.prflow_params['back_end']), True)
+    self.shell.write_lines(self.pr_dir+'/'+operator+'/main.sh', self.shell.return_main_sh_list(
+                                                                                                  './run.sh', 
+                                                                                                  self.prflow_params['back_end'], 
+                                                                                                  'syn_'+operator, 
+                                                                                                  'impl_'+operator, 
+                                                                                                  self.prflow_params['grid'], 
+                                                                                                  'qsub@qsub.com',
+                                                                                                  self.prflow_params['mem'], 
+                                                                                                  self.prflow_params['node'], 
+                                                                                                   ), True)
+ 
+
+
     map_target_exist, map_target = self.pragma.return_pragma('./input_src/'+self.prflow_params['benchmark_name']+'/operators/'+operator+'.h', 'map_target')
     if map_target == 'riscv':
       syn_inst = syn.syn(self.prflow_params)
@@ -35,20 +48,20 @@ class impl(gen_basic):
  
       print riscv_bit
       if riscv_bit == 'empty':
-        self.shell.replace_lines(self.pr_dir+'/'+operator+'/qsub_run.sh',\
+        self.shell.replace_lines(self.pr_dir+'/'+operator+'/run.sh',\
                                 {'vivado': 'vivado -mode batch -source impl_'+operator+'.tcl\ncp ../../F005_bits_'\
                                 +self.prflow_params['benchmark_name']+'/'+operator+'.bit ../../F001_overlay/riscv_bit_lib/page'\
                                 +page_num+'_'+str(inst_mem_size/2048)+'bram'+'I'+str(input_num)+'O'+str(output_num)+'.bit\n' })
       else:
-        self.shell.replace_lines(self.pr_dir+'/'+operator+'/qsub_run.sh', {'vivado': 'touch ../../F005_bits_'+self.prflow_params['benchmark_name']+'/'+operator+'.bit\nvivado'})
-        self.shell.replace_lines(self.pr_dir+'/'+operator+'/qsub_run.sh', {'vivado': 'echo read_checkpoint: 0 seconds > runLogImpl_'+operator+'.log\nvivado'})
-        self.shell.replace_lines(self.pr_dir+'/'+operator+'/qsub_run.sh', {'vivado': 'echo opt: 0 seconds >> runLogImpl_'+operator+'.log\nvivado'})
-        self.shell.replace_lines(self.pr_dir+'/'+operator+'/qsub_run.sh', {'vivado': 'echo place: 0 seconds >> runLogImpl_'+operator+'.log\nvivado'})
-        self.shell.replace_lines(self.pr_dir+'/'+operator+'/qsub_run.sh', {'vivado': 'echo route: 0 seconds >> runLogImpl_'+operator+'.log\nvivado'})
-        self.shell.replace_lines(self.pr_dir+'/'+operator+'/qsub_run.sh', {'vivado': 'echo bit_gen: 0 seconds >> runLogImpl_'+operator+'.log\nvivado'})
-        self.shell.replace_lines(self.pr_dir+'/'+operator+'/qsub_run.sh', {'vivado': 'cp ../../../'+riscv_bit+' ../../F005_bits_'+self.prflow_params['benchmark_name']+'/'+operator+'.bit' })
+        self.shell.replace_lines(self.pr_dir+'/'+operator+'/run.sh', {'vivado': 'touch ../../F005_bits_'+self.prflow_params['benchmark_name']+'/'+operator+'.bit\nvivado'})
+        self.shell.replace_lines(self.pr_dir+'/'+operator+'/run.sh', {'vivado': 'echo read_checkpoint: 0 seconds > runLogImpl_'+operator+'.log\nvivado'})
+        self.shell.replace_lines(self.pr_dir+'/'+operator+'/run.sh', {'vivado': 'echo opt: 0 seconds >> runLogImpl_'+operator+'.log\nvivado'})
+        self.shell.replace_lines(self.pr_dir+'/'+operator+'/run.sh', {'vivado': 'echo place: 0 seconds >> runLogImpl_'+operator+'.log\nvivado'})
+        self.shell.replace_lines(self.pr_dir+'/'+operator+'/run.sh', {'vivado': 'echo route: 0 seconds >> runLogImpl_'+operator+'.log\nvivado'})
+        self.shell.replace_lines(self.pr_dir+'/'+operator+'/run.sh', {'vivado': 'echo bit_gen: 0 seconds >> runLogImpl_'+operator+'.log\nvivado'})
+        self.shell.replace_lines(self.pr_dir+'/'+operator+'/run.sh', {'vivado': 'cp ../../../'+riscv_bit+' ../../F005_bits_'+self.prflow_params['benchmark_name']+'/'+operator+'.bit' })
  
-      os.system('chmod +x '+self.pr_dir+'/'+operator+'/qsub_run.sh')
+      os.system('chmod +x '+self.pr_dir+'/'+operator+'/run.sh')
 
 
 
@@ -75,14 +88,4 @@ class impl(gen_basic):
     page_num_exist, page_num = self.pragma.return_pragma('./input_src/'+self.prflow_params['benchmark_name']+'/operators/'+operator+'.h', 'page_num') 
     if page_num_exist==True:
       self.create_page(operator, page_num)
-
-
-    # go to the local mono_bft directory and run the qsub command
-    os.chdir(self.pr_dir)
-    if self.prflow_params['run_qsub']:
-      if self.prflow_params['gen_lib'] != True:
-        os.system('./qsub_main.sh')
-    os.chdir('../../')
-
-   
 

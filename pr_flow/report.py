@@ -35,9 +35,10 @@ class report(gen_basic):
         file_name = './workspace/F003_syn_'+benchmark_name+'/' + fun_name + '/runLog_' + fun_name + '.log'
         file_in = open(file_name, 'r')
         for line in file_in:
-          run_time = re.findall(r"\d+", line)
-          time_report_dict[fun_name] += '\t' + run_time[0]
-          time_data_dict[fun_name].append(int(run_time[0]))
+          #run_time = re.findall(r"\d+", line)
+          run_time = line.split()
+          time_report_dict[fun_name] += '\t' + run_time[1]
+          time_data_dict[fun_name].append(int(run_time[1]))
         file_in.close()
       except:
         print ('Something is wrong with '+file_name) 
