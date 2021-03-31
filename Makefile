@@ -95,6 +95,7 @@ $(operators_ip_targets):$(ws_mbft)/ip_repo/%/prj/floorplan_static.xpr:$(ws_hls)/
 	python2 pr_flow.py $(prj_name) -ip -op $(subst runLog,,$(basename $(notdir $<)))
 	cd $(ws_mbft)/ip_repo/$(subst runLog,,$(basename $(notdir $<))) && ./qsub_run.sh
 
+overlay: $(overlay) 
 
 # Overlay Generation
 overlay: $(ws_overlay)/overlay.dcp
