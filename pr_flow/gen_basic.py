@@ -105,7 +105,6 @@ class _shell:
   def return_run_sh_list(self, vivado_dir, tcl_file, back_end='qsub'):
     out_file = []
     out_file.append('#!/bin/bash -e')
-    print back_end, '================='
     if (back_end == 'slurm'):
       out_file.append('module load ' + vivado_dir)
       out_file.append('srun vivado -mode batch -source  ' + tcl_file)
@@ -371,8 +370,11 @@ class _tcl:
         +'.runs/impl_1/'+prj_name+'_wrapper.sysdef '+prj_dir+prj_name+'.sdk/'+prj_name+'_wrapper.hdf ',
       ''])
 
-  def return_syn2dcp_tcl_list(self, prj_dir='./prj/', prj_name = 'floorplan_static.xpr'):
-    threads_num = commands.getoutput("nproc")
+  def return_syn2dcp_tcl_list(self, back_end = 'slurm', prj_dir='./prj/', prj_name = 'floorplan_static.xpr'):
+    if back_end == 'slurm':
+      threads_num = 8
+    else:
+      threads_num = commands.getoutput("nproc")
     return ([
       'open_project '+prj_dir+prj_name,
       'reset_run synth_1',
@@ -412,7 +414,7 @@ class _tcl:
       
     return lines_list
 
-  def return_syn_page_tcl_list(self, fun_name,  file_list):
+  def return_syn_page_tcl_list(self, fun_name,  file_list, top_name='leaf'):
     #lines_list = ['create_project floorplan_static ./prj -part '+self.prflow_params['part']]
     lines_list = []
     for file_name in file_list:
@@ -444,7 +446,7 @@ class _tcl:
       'set logFileId [open ./runLog_'+fun_name+'.log "w"]',
       'set start_time [clock seconds]',
       'set_param general.maxThreads  8 ',
-      'synth_design -top leaf -part '+self.prflow_params['part']+' -mode out_of_context',
+      'synth_design -top '+top_name+' -part '+self.prflow_params['part']+' -mode out_of_context',
       'write_checkpoint -force page_netlist.dcp',
       'set end_time [clock seconds]',
       'set total_seconds [expr $end_time - $start_time]',
@@ -611,8 +613,9 @@ class _tcl:
     lines_list.append('open_checkpoint ./floorplan_static.dcp')
     for i in range(int(self.prflow_params['nl'])):
       if self.prflow_params['page'+str(i)].replace('riscv', '') != self.prflow_params['page'+str(i)]:
-        instr_mem_size = self.prflow_params['page'+str(i)].replace('riscv', '')
-        lines_list.append('read_checkpoint -cell floorplan_static_i/leaf_empty_' + str(i) + '/inst ./dummy_repo/riscv_'+str(instr_mem_size)+'bram/page_netlist.dcp')
+        lines_list.append('read_checkpoint -cell floorplan_static_i/leaf_empty_' + str(i) + '/inst ./dummy_repo/'+self.prflow_params['page'+str(i)]+'/page_netlist.dcp')
+      if self.prflow_params['page'+str(i)].replace('user_kernel', '') != self.prflow_params['page'+str(i)]:
+        lines_list.append('read_checkpoint -cell floorplan_static_i/leaf_empty_' + str(i) + '/inst ./dummy_repo/'+self.prflow_params['page'+str(i)]+'/page_netlist.dcp')
     lines_list.append('set end_time [clock seconds]')
     lines_list.append('set total_seconds [expr $end_time - $start_time]')
     lines_list.append('puts $logFileId "read_checkpoint: $total_seconds seconds"')
@@ -643,8 +646,7 @@ class _tcl:
     for i in range(int(self.prflow_params['nl'])):
       if self.prflow_params['page'+str(i)].replace('riscv', '') != self.prflow_params['page'+str(i)]:
         lines_list.append('write_bitstream -force -cell floorplan_static_i/leaf_empty_'+str(i)+\
-                          '/inst ./riscv_bit_lib/page'+str(i)+'_'+\
-                           self.prflow_params['page'+str(i)].replace('riscv', '')+'bramI5O5.bit')
+                          '/inst ./riscv_bit_lib/page'+str(i)+'_'+self.prflow_params['page'+str(i)]+'.bit')
     lines_list.append('report_timing_summary > timing.rpt')
     lines_list.append('#############################################')
     lines_list.append('## create static design with no bft pblock ##')
@@ -655,8 +657,10 @@ class _tcl:
     lines_list.append('update_design -cell floorplan_static_i/bft1 -black_box')
     lines_list.append('update_design -cell floorplan_static_i/bft2 -black_box')
     lines_list.append('update_design -cell floorplan_static_i/bft3 -black_box')
+    lines_list.append('update_design -cell floorplan_static_i/bft_center -black_box')
     for i in range(int(self.prflow_params['nl'])):
-      if self.prflow_params['page'+str(i)].replace('riscv', '') != self.prflow_params['page'+str(i)]:
+      if self.prflow_params['page'+str(i)].replace('riscv', '') != self.prflow_params['page'+str(i)] or \
+         self.prflow_params['page'+str(i)].replace('user_kernel', '') != self.prflow_params['page'+str(i)]:
         lines_list.append('update_design -cell floorplan_static_i/leaf_empty_' + str(i) + '/inst -black_box')
 
     lines_list.append('#############################################')
@@ -668,8 +672,10 @@ class _tcl:
     lines_list.append('update_design -cell floorplan_static_i/bft1 -buffer_ports')
     lines_list.append('update_design -cell floorplan_static_i/bft2 -buffer_ports')
     lines_list.append('update_design -cell floorplan_static_i/bft3 -buffer_ports')
+    lines_list.append('update_design -cell floorplan_static_i/bft_center -buffer_ports')
     for i in range(int(self.prflow_params['nl'])):
-      if self.prflow_params['page'+str(i)].replace('riscv', '') != self.prflow_params['page'+str(i)]:
+      if self.prflow_params['page'+str(i)].replace('riscv', '') != self.prflow_params['page'+str(i)] or \
+         self.prflow_params['page'+str(i)].replace('user_kernel', '') != self.prflow_params['page'+str(i)]:
         lines_list.append('update_design -cell floorplan_static_i/leaf_empty_' + str(i) + '/inst -buffer_ports')
         lines_list.append('report_utilization -pblocks p_'+str(i)+' > utilization'+str(i)+'.rpt')
    
@@ -695,7 +701,7 @@ class _tcl:
     lines_list.append('current_hw_device [get_hw_devices '+self.prflow_params['device']+']')
     lines_list.append('set_property PROBES.FILE {} [get_hw_devices '+self.prflow_params['device']+']')
     lines_list.append('set_property FULL_PROBES.FILE {} [get_hw_devices '+self.prflow_params['device']+']')
-    lines_list.append('set_property PROGRAM.FILE {../F001_overlay/main.bit} [get_hw_devices '+self.prflow_params['device']+']')
+    lines_list.append('set_property PROGRAM.FILE {./main.bit} [get_hw_devices '+self.prflow_params['device']+']')
     lines_list.append('program_hw_devices [get_hw_devices '+self.prflow_params['device']+']')
     lines_list.append('refresh_hw_device [lindex [get_hw_devices '+self.prflow_params['device']+'] 0]\n')
     for operator in operators:

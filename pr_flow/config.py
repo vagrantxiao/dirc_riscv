@@ -227,12 +227,12 @@ class config(gen_basic):
  
  
   def run(self, operators):
-    self.shell.re_mkdir(self.sdk_dir+'/')
+    self.shell.mkdir(self.sdk_dir+'/')
     self.shell.re_mkdir(self.sdk_dir+'/cpp_src')
     # self.shell.cp_dir(self.mono_bft_dir+'/prj/floorplan_static.sdk/floorplan_static_wrapper.hdf', self.sdk_dir)
     self.shell.cp_dir('./common/driver_src/config.cpp', self.sdk_dir+'/cpp_src/config_'+self.prflow_params['benchmark_name']+'.cpp')
     self.shell.cp_dir('./common/driver_src/config.h', self.sdk_dir+'/cpp_src/config_'+self.prflow_params['benchmark_name']+'.h')
-    # self.shell.cp_dir('./common/script_src/project_xsdk_core.tcl', self.sdk_dir)
+    self.shell.cp_dir('./common/script_src/project_xsdk_core.tcl', self.sdk_dir)
     self.shell.cp_dir('./input_src/'+self.prflow_params['benchmark_name']+'/sdk/*', self.sdk_dir+'/cpp_src')
 
     page_num_dict = self.return_page_num_dict_local(operators)

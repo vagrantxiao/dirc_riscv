@@ -1,15 +1,18 @@
 
-#prj_name=bnn
-#prj_name=digit_reg
 #prj_name=digit_reg_small
-#prj_name=spam_filter
 #prj_name=spam_filter_small
-#prj_name=optical_flow
-#prj_name=optical_flow_origin
-#prj_name=rendering
 #prj_name=data_move
 #prj_name=data_shift
-prj_name=face_detection
+
+
+#prj_name=bnn
+#prj_name=digit_reg
+#prj_name=spam_filter
+prj_name=optical_flow
+#prj_name=optical_flow_final
+#prj_name=rendering
+#prj_name=face_detection
+
 
 
 src=./common/verilog_src
@@ -50,12 +53,6 @@ config_target=$(ws_mbft)/config.cpp
 all: $(download_target)
 
 
-config: $(config_target)
-
-$(config_target): $(operators_src)
-	python2 pr_flow.py $(prj_name) -cfg -op '$(basename $(notdir $^))'
-	cp $(ws)/F008_sdk_$(prj_name)/cpp_src/* $(ws)/sdk/$(prj_name)/src/
-
 download: $(download_target)
 	cd $(ws_bit) && ./qsub_run.sh 
 
@@ -64,11 +61,10 @@ $(download_target): $(operators_bit_targets)
 
 # Implementation from post-synthesis DCP to bitstreams
 # generate bitstream for each operator
-$(operators_bit_targets):$(ws_bit)/%.bit:$(ws_syn)/%/page_netlist.dcp $(ws_overlay)/overlay.dcp 
+$(operators_bit_targets):$(ws_bit)/%.bit:$(ws_overlay)/overlay.dcp $(ws_syn)/%/page_netlist.dcp 
 	python2 pr_flow.py $(prj_name) -impl -op $(basename $(notdir $@))
 	cd $(ws_impl)/$(basename $(notdir $@)) && ./main.sh
 
-syn: $(operators_syn_targets)
 
 # Out-of-Context Synthesis from Verilog to post-synthesis DCP
 $(operators_syn_targets):$(ws_syn)/%/page_netlist.dcp:$(ws_hls)/runLog%.log $(ws_overlay)/overlay.dcp
@@ -82,35 +78,28 @@ $(operators_hls_targets):$(ws_hls)/runLog%.log:$(operators_dir)/%.cpp $(operator
 	python2 pr_flow.py $(prj_name) -hls -op $(basename $(notdir $<))
 	cd $(ws_hls) && ./main_$(basename $(notdir $<)).sh
 
-mono_prj: $(mono_bft_target)
-
-# prepare the logic equivalent monolithic project 
-$(mono_bft_target): $(ws_overlay)/src  $(operators_ip_targets)
-	python2 pr_flow.py $(prj_name) -mbft
-	cd $(ws_mbft) && ./main.sh
-
-# prepare the ip package for monolithic project
-$(operators_ip_targets):$(ws_mbft)/ip_repo/%/prj/floorplan_static.xpr:$(ws_hls)/runLog%.log
-	echo $@
-	python2 pr_flow.py $(prj_name) -ip -op $(subst runLog,,$(basename $(notdir $<)))
-	cd $(ws_mbft)/ip_repo/$(subst runLog,,$(basename $(notdir $<))) && ./qsub_run.sh
-
-overlay: $(overlay) 
-
-# Overlay Generation
-overlay: $(ws_overlay)/overlay.dcp
 
 $(ws_overlay)/overlay.dcp: $(ws_overlay)/src  
-	cd $(ws_overlay) && ./main.sh
+	cp -rf ./common/overlay/riscv_bit_lib ./workspace/F001_overlay
+	cp -rf ./common/verilog_src ./workspace/F001_overlay/src
+	cp -rf ./common/overlay/size_table/* ./workspace/F001_overlay
+	cp -rf ./common/overlay/overlay.dcp ./workspace/F001_overlay
+	cp -rf ./common/overlay/main.bit ./workspace/F001_overlay
+	touch ./workspace/F001_overlay/*
+
 
 $(ws_overlay)/src : common/verilog_src/*  common/script_src/project_syn_gen_zcu102.tcl
+	rm -rf ./workspace/F001_overlay
+	mkdir -p ./workspace/F001_overlay
 	python2 pr_flow.py $(prj_name) -g
 
 
+config: $(config_target)
 
-$(ws_sdk): $(src)/*.cc $(src)/*.h 
-	mkdir -p $@ 
-	cp -rf  $^ $@
+$(config_target): $(operators_src)
+	python2 pr_flow.py $(prj_name) -cfg -op '$(basename $(notdir $^))'
+	cp $(ws)/F008_sdk_$(prj_name)/cpp_src/* $(ws)/sdk/$(prj_name)/src/
+
 
 
 HW:
@@ -126,6 +115,8 @@ riscv:
 report: 
 	 python2 ./pr_flow.py $(prj_name) -op '$(basename $(notdir $(operators_bit_targets)))' -rpt
 
+clear:
+	rm -rf ./workspace/*$(prj_name) 
 clean:
 	rm -rf ./workspace
 	rm -rf ./pr_flow/*.pyc

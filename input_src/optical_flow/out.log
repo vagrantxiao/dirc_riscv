@@ -2,9 +2,9 @@ Optical Flow Application
 Reading input files ... 
 Reading reference output flow... 
 Start!
-sbbbbb
-We should receive 892932 values
-Almost there!/nChecking results:
+Almost there!
+We should receive 892932 words
+Checking results:
 The right Average error should be 32.058417
 Average error: 32.058417 degrees
-elapsed time: 1764969 us
+elapsed time: 1565227 us

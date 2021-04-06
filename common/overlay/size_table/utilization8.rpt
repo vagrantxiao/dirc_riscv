@@ -1,0 +1,217 @@
+Copyright 1986-2018 Xilinx, Inc. All Rights Reserved.
+----------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2018.2 (lin64) Build 2258646 Thu Jun 14 20:02:38 MDT 2018
+| Date         : Fri Apr  2 02:32:25 2021
+| Host         : prflow-compute-0-0 running 64-bit CentOS Linux release 7.8.2003 (Core)
+| Command      : report_utilization -pblocks p_8
+| Design       : floorplan_static_wrapper
+| Device       : xczu9egffvb1156-2
+| Design State : Synthesized
+----------------------------------------------------------------------------------------
+
+Utilization Design Information
+
+Table of Contents
+-----------------
+1. Pblock Summary
+2. Clock Region Statistics
+3. CLB Logic
+3.1 Summary of Registers by Type
+4. BLOCKRAM
+5. ARITHMETIC
+6. I/O
+7. CLOCK
+8. ADVANCED
+9. CONFIGURATION
+10. Primitives
+11. Black Boxes
+12. Instantiated Netlists
+
+1. Pblock Summary
+-----------------
+
++-------+--------+-------+-------------------+-----------------+----------------+
+| Index | Parent | Child | EXCLUDE_PLACEMENT | CONTAIN_ROUTING | SLR(s) Covered |
++-------+--------+-------+-------------------+-----------------+----------------+
+| 1     |    p_8 |       |                 1 |               1 |           SLR0 |
++-------+--------+-------+-------------------+-----------------+----------------+
+
+
+2. Clock Region Statistics
+--------------------------
+
++-------------+--------------------+
+| CLOCKREGION | Pblock Sites in CR |
++-------------+--------------------+
+| X2Y0        |             41.18% |
+| X3Y0        |             58.82% |
++-------------+--------------------+
+
+
+3. CLB Logic
+------------
+
++-------------------------+------+-------+-----------+-------+
+|        Site Type        | Used | Fixed | Available | Util% |
++-------------------------+------+-------+-----------+-------+
+| CLB LUTs*               |  102 |     0 |     15360 |  0.66 |
+|   LUT as Logic          |  102 |     0 |     15360 |  0.66 |
+|   LUT as Memory         |    0 |     0 |      7680 |  0.00 |
+| CLB Registers           |    2 |     0 |     30720 | <0.01 |
+|   Register as Flip Flop |    2 |     0 |     30720 | <0.01 |
+|   Register as Latch     |    0 |     0 |     30720 |  0.00 |
+| CARRY8                  |    0 |     0 |      1920 |  0.00 |
+| F7 Muxes                |    0 |     0 |      7680 |  0.00 |
+| F8 Muxes                |    0 |     0 |      3840 |  0.00 |
+| F9 Muxes                |    0 |     0 |      1920 |  0.00 |
++-------------------------+------+-------+-----------+-------+
+* Warning! The Final LUT count, after physical optimizations and full implementation, is typically lower. Run opt_design after synthesis, if not already completed, for a more realistic count.
+
+
+3.1 Summary of Registers by Type
+--------------------------------
+
++-------+--------------+-------------+--------------+
+| Total | Clock Enable | Synchronous | Asynchronous |
++-------+--------------+-------------+--------------+
+| 0     |            _ |           - |            - |
+| 0     |            _ |           - |          Set |
+| 0     |            _ |           - |        Reset |
+| 0     |            _ |         Set |            - |
+| 0     |            _ |       Reset |            - |
+| 0     |          Yes |           - |            - |
+| 0     |          Yes |           - |          Set |
+| 2     |          Yes |           - |        Reset |
+| 0     |          Yes |         Set |            - |
+| 0     |          Yes |       Reset |            - |
++-------+--------------+-------------+--------------+
+
+
+4. BLOCKRAM
+-----------
+
++----------------+------+-------+-----------+-------+
+|    Site Type   | Used | Fixed | Available | Util% |
++----------------+------+-------+-----------+-------+
+| Block RAM Tile |    0 |     0 |        60 |  0.00 |
+|   RAMB36/FIFO* |    0 |     0 |        60 |  0.00 |
+|   RAMB18       |    0 |     0 |       120 |  0.00 |
++----------------+------+-------+-----------+-------+
+* Note: Each Block RAM Tile only has one FIFO logic available and therefore can accommodate only one FIFO36E2 or one FIFO18E2. However, if a FIFO18E2 occupies a Block RAM Tile, that tile can still accommodate a RAMB18E2
+
+
+5. ARITHMETIC
+-------------
+
++-----------+------+-------+-----------+-------+
+| Site Type | Used | Fixed | Available | Util% |
++-----------+------+-------+-----------+-------+
+| DSPs      |    0 |     0 |       120 |  0.00 |
++-----------+------+-------+-----------+-------+
+
+
+6. I/O
+------
+
++------------+------+-------+-----------+-------+
+|  Site Type | Used | Fixed | Available | Util% |
++------------+------+-------+-----------+-------+
+| Bonded IOB |    0 |     0 |        24 |  0.00 |
++------------+------+-------+-----------+-------+
+
+
+7. CLOCK
+--------
+
++----------------------+------+-------+-----------+-------+
+|       Site Type      | Used | Fixed | Available | Util% |
++----------------------+------+-------+-----------+-------+
+| GLOBAL CLOCK BUFFERs |    0 |     0 |         4 |  0.00 |
+|   BUFGCE             |    0 |     0 |         4 |  0.00 |
++----------------------+------+-------+-----------+-------+
+* Note: Each used BUFGCTRL counts as two global buffer resources. This table does not include global clocking resources, only buffer cell usage. See the Clock Utilization Report (report_clock_utilization) for detailed accounting of global clocking resource availability.
+
+
+8. ADVANCED
+-----------
+
++-----------+------+-------+-----------+-------+
+| Site Type | Used | Fixed | Available | Util% |
++-----------+------+-------+-----------+-------+
+
+
+9. CONFIGURATION
+----------------
+
++-----------+------+-------+-----------+-------+
+| Site Type | Used | Fixed | Available | Util% |
++-----------+------+-------+-----------+-------+
+
+
+10. Primitives
+--------------
+
++----------+------+---------------------+
+| Ref Name | Used | Functional Category |
++----------+------+---------------------+
+| LUT1     |  102 |                 CLB |
+| FDCE     |    2 |            Register |
++----------+------+---------------------+
+
+
+11. Black Boxes
+---------------
+
++---------------+------+
+|    Ref Name   | Used |
++---------------+------+
+| leaf_riscv_bb |    1 |
+| leaf_riscv_bb |    1 |
+| leaf_riscv_bb |    1 |
+| leaf_riscv_bb |    1 |
+| leaf_riscv_bb |    1 |
+| leaf_riscv_bb |    1 |
+| leaf_riscv_bb |    1 |
+| leaf_riscv_bb |    1 |
+| leaf_riscv_bb |    1 |
+| leaf_riscv_bb |    1 |
+| leaf_riscv_bb |    1 |
+| leaf_riscv_bb |    1 |
+| leaf_riscv_bb |    1 |
+| leaf_riscv_bb |    1 |
+| leaf_bb       |    1 |
++---------------+------+
+
+
+12. Instantiated Netlists
+-------------------------
+
++--------------------------------------+------+
+|               Ref Name               | Used |
++--------------------------------------+------+
+| leaf_riscv_bb_bb                     |    5 |
+| floorplan_static_zynq_ultra_ps_e_0_0 |    1 |
+| floorplan_static_leaf_empty_9_0      |    1 |
+| floorplan_static_leaf_empty_8_0      |    1 |
+| floorplan_static_leaf_empty_6_0      |    1 |
+| floorplan_static_leaf_empty_5_0      |    1 |
+| floorplan_static_leaf_empty_4_0      |    1 |
+| floorplan_static_leaf_empty_3_0      |    1 |
+| floorplan_static_leaf_empty_31_0     |    1 |
+| floorplan_static_leaf_empty_30_0     |    1 |
+| floorplan_static_leaf_empty_29_0     |    1 |
+| floorplan_static_leaf_empty_28_0     |    1 |
+| floorplan_static_leaf_empty_27_0     |    1 |
+| floorplan_static_leaf_empty_26_0     |    1 |
+| floorplan_static_leaf_empty_24_0     |    1 |
+| floorplan_static_leaf_empty_20_0     |    1 |
+| floorplan_static_leaf_empty_19_0     |    1 |
+| floorplan_static_leaf_empty_18_0     |    1 |
+| floorplan_static_leaf_empty_17_0     |    1 |
+| floorplan_static_leaf_empty_16_0     |    1 |
+| floorplan_static_leaf_empty_11_0     |    1 |
+| floorplan_static_leaf_empty_10_0     |    1 |
++--------------------------------------+------+
+
+
+report_utilization: Time (s): cpu = 00:00:04 ; elapsed = 00:00:04 . Memory (MB): peak = 7746.520 ; gain = 0.000 ; free physical = 56188 ; free virtual = 58499

@@ -1,7 +1,0 @@
-
-void gradient_weight_x3(
-		       hls::stream<databus_t> &Input_1,
-		       hls::stream<databus_t> &Output_1,
-		       hls::stream<databus_t> &Output_2);
-#pragma map_target=riscv page_num=9 inst_mem_size = 65536
-#pragma debug_port = 3

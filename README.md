@@ -113,144 +113,215 @@ parse the top.cpp and operator header files to extract the interconnection,
 and generate the configuration packets.
  
 
-## 4 Tutorial 2: Map one operator to RISC-V
-1. The partial reconfigurable page 3 is pre-loaded with one picorc32 cores.
-To make sure the RISC-V core can run 'ap_int.h' and 'ap_fixed.h', the 
-smallest bram size it 65536 Bytes. We could only pre-load one page (page 3) with
-RISC-V for ultra96, but for ZCU102, we can pre-load 16 RISC-V cores.
+## 4 Tutorial 1: Local C Simulation
+1. We can start from the local C++ code. Go to [./input_src/optical_flow](./input_src/optical_flow).
+2. In the [Makefile](./input_src/optical_flow/Makefile), we need to modify the 
+include path, which corresponds to the your installation path.
 
-![](images/Overlay_ultra96.png)
+```c
+INCLUDE=-I /opt/Xilinx/Vivado/2018.2/include 
+```
+
+3. type **make** do simulate the source C++ code with gcc. You should see the results as below.
+
+![](images/c_simulation.png)
+
+
+## 5 Tutorial 2: Initial Hardware Implementation
+1. After the C++ implementation, we will launch our first trial to map the 9 operators
+to hardware page.
+
+2. Type **make report**, you can see the each operator is mapped to one physical 
+page, but currently, no hardware implementation details are available.
+The overlay size is as below.
+
+![](images/overlay_HW.jpg)
+
+3. As you set the vivado properly, we need to set the **Xilinx_dir**, which represents
+the vivado installtion diretory in 
+[./common/configure/configure.xml](./common/configure/configure.xml).
+
+```c
+  <spec name = "Xilinx_dir" value = "/opt/Xilinx/Vivado/2018.2/settings64.sh" />
+```
+
+4. In the [Makefile](./Makefile), change the **prj_name** to **optical_flow**.
+
+```c
+    prj_name=optical_flow
+```
+
+5. Now we are ready to launch the first hardware implementation trial. Type 
+**make -j$(nproc)** to take advantage of multi-threads of your local CPU.
+However, you need to have enough DDR memory to explore the parallel compilation.
+The safe ratio between DDR memory and CPU threads is 4 GBs/threads. For example, 
+if you have 8 threads-CPU, the safe DDR memory size is around 32 GBs. 
+
+6. After all the compilations are done, we can see one of the pages (flow_calc) 
+consumes 56,683 LUTs, and is too big 
+to be mapped. By typing **make report**, you can see the detailed implementation information in the terminal.
+You can also read the report under **./workspace/report**.
+
+![](images/report1.png)
+
+
+
+
+
+
+## 6 Tutorial 3: Map all the operators to RISC-V
+1. The 20 partial reconfigurable pages are pre-loaded with one picorc32 cores.
+To make sure the RISC-V core can run 'ap_int.h' and 'ap_fixed.h', the 
+smallest bram size it 65536 Bytes. We could easily map 9 opertors out of 20
+pre-load 16 RISC-V cores.
+
+![](images/overlay_riscv.jpg)
 
 2. We are going to switch '**data_redir**' page to RISC-V. To achieve
 this goal, we only need to avoid downloading any partial bitstreams to
 page 3 and use ARM to send instruction data through BFT to the pre-loaded
 RISC-V core. 
 
-3. As the user, we only need to change the pragma in [data_redir.h](./input_src/rendering/operators/data_redir_m.h).
+3. As the user, we need to change the pragma in [operators' header files](./input_src/optical_flow/operators).
+
 ```c
     #pragma map_target = riscv page_num = 3 inst_mem_size = 65536
 ```
-4. Type '**Make**', the RISC-V elf file will be compiled automatically.
 
-5. Type '**Make config**", the instr_data will make copied to Vitis project,
+4. As we have alread set the RISC-V toolchain before, we need to specify the 
+**riscv_dir** feature.
+
+```c
+<spec name = "riscv_dir" value = "/opt/riscv32" />
+```
+
+5. By typing **make -j$(nproc)**, the RISC-V elf file will be compiled automatically.
+Type **make report**, you can see the comipile time details in the terminal.
+
+![](images/report2.png)
+
+6. As all the RISC-V ELF files are ready, we can launch the soft-run with Xilinx SDK. 
+
+```c
+    # copy the hdf file to specific dir:
+    mkdir -p ./workspace/sdk
+    cp ./common/overlay/floorplan_static_wrapper.hdf ./workspace/sdk/
+```
+
+7. Launch sdk 2018.2, specify the workspace directory to the DIR with the 'floorplan_static_wrapper.hdf'
+as below.
+
+![](images/sdk_dir.png)
+
+8. Create an application projets as below.
+
+![](images/create_prj.png)
+
+9. Click **new** to specify the hdf file.
+
+![](images/hdf.png)
+
+10. Click **new** to specify the hdf file directory as below.
+
+![](images/hdf_dir.png)
+
+11. Create the application with the same name as the benchmark.
+
+![](images/sdk_prj_name.png)
+
+12. Type '**Make config**", the instr_data will make copied to Vitis project,
 and the cpp source will also be updated.
 
-6. Type '**Make download**' to download the bitstreams into the board,
-and launch the Vitis project to run the project. You can see the results
+13. Fresh the source files. If you set the sdk application projets with the right
+direcotry and name, you should see the source files are updated automatically by 
+previous step.
+
+![](images/refresh.png)
+
+
+
+14. Type '**Make download**' to download the bitstreams into the board,
+and launch the SDK project to run the project. You can see the results
 with one page running on the RISC-V core.
 
+![](images/riscv_results.png)
 
 
-## 3 Tutorial 1: Map all Operators to Hardware
-1. After you set up all the necessary tools, you need set the directory 
-for Vitis and RISC-V toolchain in [configure.xml](./common/configure/configure.xml).
+
+## 7 Tutorial 4: More Debugging Features for RISC-V implementation
+1. We can enable the print features by changing the 
+[./input_src/optical_flow/operators/flow_calc.cpp](./input_src/optical_flow/operators/flow_calc.cpp)
+as below. The **print_str** and **print_dec** are the functions in the RISC-V firmware.
+
 ```c
-    <spec name = "Xilinx_dir" value = "/scratch/unsafe/SDSoC/Vivado/2020.1/settings64.sh" />
-    <spec name = "RISC-V_dir"  value = "/scratch/unsafe/RISCV/RISC-V32" />
+#ifdef RISCV
+      print_str("r=");
+      print_dec(r);
+      print_str("\n");
+#endif
 ```
 
-2. In the [Makefile](./Makefile), change the **prj_name** to **rendering**.
-```c
-    prj_name=rendering
+2. Compile the projects again by steps below.
+
+```
+    # re-compile RISC-V cores
+    make -j$(nproc)
+    make config
+    make download
 ```
 
-3. Type '**Make -j$(nproc)**'. It will generate all the necessary DCP and 
+3. Go back to the SDK projects can re-launch the ARM run. You can see the debugging
+information as below. We can see it takes around 18 seconds to process one rows of
+frames. We will use faster RISC-V cores to accelerate the image processing in the future.
+
+![](images/debugging.png)
+
+
+## 8 Tutorial 5: Map all Operators to Hardware
+
+1. By looking into the **flow_calc** operator in Figure 1, we find the nested 
+loop calculation is suitable for data-parallelism. Especially, **buf[0]**
+and **buf[1]** are completely independent (L24--26).  Therefore, we can 
+split the computation into two operators. 
+Consequently, we can also easily split the upstream 
+operators **tensor_y**, **tensor_x**, **product**, **weight_x**,
+ **weight_y** in similar way, so that we can benefit from smaller
+pages to accelerate the compilation time.
+For operators **unpack**, **grad_xy**, **grad_z**, we 
+can see they are small, and  
+we can merge them into one operator without
+harming the performance.
+As we split each operator, we can
+compile it quickly in 2 s and run the split design on the softcore
+processors along with the already FPGA-page-mapped operators to validate
+functionality.  
+After decomposing and merging the operators, we have 16  operators that all fit
+on the pages on our overlay, and the entire design runs on FPGA logic.  
+
+![](images/opticalflow_final.png)
+
+
+3. We have our decomposed C++ code under [./input_src/optical_flow_final/](./input_src/optical_flow_final).
+We can change the project name to **optical_flow_final**.
+
+```c
+prj_name=optical_flow_final
+```
+
+4. Type '**Make -j$(nproc)**'. It will generate all the necessary DCP and 
 bitstream files automatically. Different operators can be compiled in 
 parallel according to the thread number of your local machine. Be carefull
 with the memory requirements, when you use multi-threads to compile the 
 project. When I use 8 threads to compile, I at least need 32 GB DDR 
 memory.
+
 ```c
 Make -j$(nproc)
 ```
 
-4. Type **Make mono_prj -j$(nproc)**. It will generate floorplan_staitc_wrapper.xsa
-file for Vitis project under ./workspace/F007_mono_bft_rendering/prj/.
-This is a one-time compilation to get the xsa file for Vitis. You don't 
-need to compile the xsa when you make changes to the operators later.
-To save time, you can also copy the floorplan_staitc_wrapper.xsa [here](./BSP).
-```c
-Make mono_prj -j$(nproc)
-```
-
-5. I recomend you set your Vitis directory to ./workspace/vitis, and create
-an empty cpp application with the same name as the benchmark, so that our Makefile
-can directly copy the application cpp files to the correct directory later.
-Change the stack and heap size to 0x20000 in lscript.ld file.
-
-![](images/empty_cpp.png)
-
-6. Type '**Make config**'. It will generate all the necessary cpp files
-for the Vitis project under './workspace/F008_sdk_rendering/cpp_src'.
-If you create your Vitis project under the right place, the Makefile
-has already copied the cpp source to your Vitis project/src/.
-Otherwise, you need to copy the source files to your Vitis project by yourself.
-
-![](images/vitis_src.png)
-
-7. As our floorplan_staitc_wrapper.xsa includes the correct bitstreams, you can
-run the vitis project and get the correct results. At least run it once 
-to get a '**run configuration file**', which we can modify later.
-
-8. However, our target is to replace the bitstreams with our partially-generated ones. Therefore, 
-we need to modify the '**run configurations file**' to avoid downloading bitstream
-when launch the ARM. You can right click the project->Run As->Run Configurations.
-Uncheck **Program FPGA** and **Reset entire system**, check **Reset APU**, 
-and fianlly click **Apply** and **Close**. 
-
-![](images/configuration.png)
-
-9. Type '**Make download**', the terminal will download the static and 
-partial bitstreams into the board automatically. This time, run the 
-Vitis application, you should get the correct results.
 
 
-## 5 Tutorial 3: Enable Print Function for Risc-V.
 
-1. The RISC-V core can also print out some debugging information and send
-it back to ARM. The ARM can parse the printed-out information and show 
-it through UART.
-
-2. We have 7 debug ports to receive debugging information from up to 7
-RISC-V cores. The ARM will detect whether there are valid data in the receiving
-stream fifo according to a timer interrupt, and read out the debugging data. 
-
-3. You can modify the file [data_redir.h](./input_src/rendering/operators/data_redir_m.h) 
-This means that the debugging information from page 3 will send to 
-debug port 2.
-```c
-    #pragma map_target = riscv page_num = 3 inst_mem_size = 65536
-    #pragma debug_port = 2
-```
-
-4. In the [data_redir.cpp](./input_src/rendering/operators/data_redir_m.cpp),
-you can use the **print_dec** and **print_str** functions for RISC-V.
-Change **RISCV1** to **RISCV**. The print code will be enabled.
-
-```c
-#ifdef RISCV
-      print_dec(cnt);
-      print_str("\n");
-      cnt++;
-    #else
-      //printf("in: %08x\n", (unsigned int)input_lo);
-      //printf("in: %08x\n", (unsigned int)input_mi);
-      unsigned int data;
-      data = input_lo;
-      //printf("cnt = %08x\n", input_lo.to_int());
-      cnt++;
-#endif
-```
-`
-5. Type '**Make**', the RISC-V elf file will be compiled automatically.
-
-6. Type '**Make config**", the instr_data will make copied to Vitis project,
-and the cpp source will also be updated.
-
-7. Type '**Make download**' to download the bitstreams into the board,
-and launch the Vitis project to run the project. You can see the results
-with one page running on the RISC-V core. The debugging information from 
-RISC-V core will show up.
 
 
 ## 6 Mapping Report

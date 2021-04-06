@@ -9,3 +9,4 @@ void strong_classifier
   hls::stream<ap_uint<32> > & Output_1
 );
 #pragma map_target = riscv page_num = 9 inst_mem_size = 32768
+#pragma debug_port = 3

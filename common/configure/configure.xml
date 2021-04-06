@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-  <spec name = "riscv_dir"          value = "/home/ylxiao_seas_upenn_edu/RISCV/riscv32" />
+  <spec name = "riscv_dir"          value = "/opt/riscv32" />
   <!--specifications for pr_flow tool-->
-  <spec name = "Xilinx_dir"         value = "xilinx/2018.2" />
+  <spec name = "Xilinx_dir"         value = "/opt/Xilinx/Vivado/2018.2/settings64.sh" />
   <!--spec name = "Xilinx_dir"         value = "/scratch/unsafe/SDSoC/SDx/2018.2/settings64.sh" -->
   <spec name = "board" value = "zcu102" />
   <!--spec name = "board"              value = "u96" -->
@@ -27,11 +27,10 @@
   <spec name = "config_regen"       value = "1" />
   <spec name = "grid"               value = "70s" />
   <spec name = "maxThreads"         value = "8" />
-  <spec name = "back_end"           value = "slurm" />
   <spec name = "maxJobs"            value = "32" />
-  <spec name = "node"               value = "2" />
+  <spec name = "node"               value = "4" />
+  <spec name = "back_end"           value = "local" />
   <spec name = "mem"                value = "7500mb" />
-  <!--spec name = "mem"                value = "8G" -->
   <spec name = "PR_mode"            value = "noquick" />
   <spec name = "packet_bits"        value = "49" />
   <spec name = "addr_bits"          value = "5" />
@@ -58,35 +57,35 @@
   <spec name = 'page0' value = "ARM" />
   <spec name = 'page1' value = "DMA" />
   <spec name = 'page2' value = "DEBUG" />
-  <spec name = 'page3' value = "riscv16" />
-  <spec name = 'page4' value = "riscv16" />
-  <spec name = 'page5' value = "riscv16" />
-  <spec name = 'page6' value = "riscv16" />
-  <spec name = 'page7' value = "empty" />
-  <spec name = 'page8' value = "riscv64" />
-  <spec name = 'page9' value = "riscv32" />
-  <spec name = 'page10' value = "riscv32" />
-  <spec name = 'page11' value = "riscv32" />
+  <spec name = 'page3' value = "riscv_16bramI5O5" />
+  <spec name = 'page4' value = "riscv_16bramI5O5" />
+  <spec name = 'page5' value = "riscv_16bramI5O5" />
+  <spec name = 'page6' value = "riscv_16bramI5O5" />
+  <spec name = 'page7' value = "DMA" />
+  <spec name = 'page8' value = "riscv_64bramI5O5" />
+  <spec name = 'page9' value = "riscv_32bramI5O5" />
+  <spec name = 'page10' value = "user_kernel" />
+  <spec name = 'page11' value = "riscv_32bramI5O5" />
   <spec name = 'page12' value = "empty" />
   <spec name = 'page13' value = "empty" />
   <spec name = 'page14' value = "empty" />
   <spec name = 'page15' value = "empty" />
-  <spec name = 'page16' value = "riscv32" />
-  <spec name = 'page17' value = "riscv32" />
-  <spec name = 'page18' value = "riscv32" />
-  <spec name = 'page19' value = "riscv64" />
-  <spec name = 'page20' value = "riscv64" />
+  <spec name = 'page16' value = "riscv_32bramI5O5" />
+  <spec name = 'page17' value = "riscv_32bramI5O5" />
+  <spec name = 'page18' value = "riscv_32bramI5O5" />
+  <spec name = 'page19' value = "riscv_64bramI5O5" />
+  <spec name = 'page20' value = "riscv_64bramI5O5" />
   <spec name = 'page21' value = "empty" />
   <spec name = 'page22' value = "empty" />
   <spec name = 'page23' value = "empty" />
-  <spec name = 'page24' value = "riscv16" />
-  <spec name = 'page25' value = "riscv16" />
-  <spec name = 'page26' value = "riscv16" />
-  <spec name = 'page27' value = "riscv16" />
-  <spec name = 'page28' value = "riscv16" />
-  <spec name = 'page29' value = "riscv16" />
-  <spec name = 'page30' value = "riscv16" />
-  <spec name = 'page31' value = "riscv16" />
+  <spec name = 'page24' value = "riscv_16bramI5O5" />
+  <spec name = 'page25' value = "empty" />
+  <spec name = 'page26' value = "riscv_16bramI5O5" />
+  <spec name = 'page27' value = "riscv_16bramI5O5" />
+  <spec name = 'page28' value = "riscv_16bramI5O5" />
+  <spec name = 'page29' value = "riscv_16bramI5O5" />
+  <spec name = 'page30' value = "riscv_16bramI5O5" />
+  <spec name = 'page31' value = "riscv_16bramI5O5" />
 
 
 </configuration>

@@ -64,6 +64,8 @@ void check_results(velocity_t output[MAX_HEIGHT][MAX_WIDTH], CFloatImage refFlow
       double ref_y = refFlow.Pixel(j, i, 1);
       double ref_deg = atan2(-ref_y, -ref_x) * 180.0 / M_PI;
 
+      //printf("ref_x = %.10f\n", ref_x);
+	  //printf("ref_y = %.10f\n", ref_y);
       // Normalize error to [-180, 180]
       double error = out_deg - ref_deg;
       while (error < -180) error += 360;

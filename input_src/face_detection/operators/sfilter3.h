@@ -8,3 +8,4 @@ void sfilter3
   hls::stream<ap_uint<32> > & Output_3
 );
 #pragma map_target = riscv page_num = 30 inst_mem_size = 65536
+#pragma debug_port = 3

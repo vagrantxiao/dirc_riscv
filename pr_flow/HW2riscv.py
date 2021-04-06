@@ -29,7 +29,11 @@ if __name__ == '__main__':
 
 
       for line in file_in:
-        file_out.write(line.replace('HW', 'riscv'))
+        if line != line.replace('HW', 'riscv'):
+          file_out.write(line.replace('HW', 'riscv'))
+          #file_out.write('#pragma debug_port = 3\n')
+        else:
+          file_out.write(line)
 
       file_in.close()
       file_out.close()

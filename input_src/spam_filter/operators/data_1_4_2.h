@@ -10,5 +10,5 @@ void data_1_4_2(
 			hls::stream<ap_uint<32> > & Output_4,
 			hls::stream<ap_uint<32> > & Output_5
 			);
-#pragma map_target = riscv page_num = 4 inst_mem_size = 32768
+#pragma map_target = riscv page_num = 3 inst_mem_size = 32768
 

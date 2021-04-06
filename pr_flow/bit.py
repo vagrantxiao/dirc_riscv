@@ -17,6 +17,7 @@ class bit(gen_basic):
       #if (if_HW==True and target=='HW') or target == 'riscv': hw_operator_list.append(operator)
       #if (if_HW==True and target=='HW'): 
       hw_operator_list.append(operator)
+    self.shell.cp_dir(self.overlay_dir+'/main.bit', self.bit_dir)
     self.shell.write_lines(self.bit_dir+'/download.tcl', self.tcl.return_download_bit_tcl_list(hw_operator_list))
     self.shell.write_lines(self.bit_dir+'/qsub_run.sh', self.shell.return_run_sh_list(self.prflow_params['Xilinx_dir'], 'download.tcl'), True)
     self.shell.add_lines(self.bit_dir+'/qsub_run.sh', 'vivado', ['rm -rf ./vivado*'])

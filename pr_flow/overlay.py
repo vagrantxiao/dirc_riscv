@@ -44,37 +44,51 @@ class overlay(gen_basic):
                   '../../src/instr_config.v',
                   '../../src/write_b_out.v',
                   '../../src/user_kernel.v',
+                  '../../src/picorv32_wrapper.v',
+                  '../../src/picorv32.v',
+                  '../../src/picorv_mem.v',
+                  '../../src/xram2.v',
+                  '../../src/xram_triple.v',
+                  '../../src/riscv2consumer.v',
                   './leaf.v'
                 ]
     self.shell.write_lines(self.overlay_dir+'/dummy_repo/'+fun_name+'/dummy.tcl', self.tcl.return_syn_page_tcl_list(fun_name, file_list))
-    self.shell.write_lines(self.overlay_dir+'/dummy_repo/'+fun_name+'/run.sh',      self.shell.return_run_sh_list(self.prflow_params['Xilinx_dir'], 'dummy.tcl'), True)
+    self.shell.write_lines(self.overlay_dir+'/dummy_repo/'+fun_name+'/run.sh',      self.shell.return_run_sh_list(self.prflow_params['Xilinx_dir'], 'dummy.tcl', self.prflow_params['back_end']), True)
     self.shell.write_lines(self.overlay_dir+'/dummy_repo/'+fun_name+'/'+'leaf.v', self.verilog.return_page_v_list(0, fun_name, 1, 1, True))
     
     # temporarily only copy the synthesis files for RISC-V core syntheis
     # We use this RISC-V post-syn dcp to pre-load somes pages.
     # When an operator is mapped to RISC-V, we can use the pre-compiled RISC-V, instead of re-compilation
     instr_mem_addr_width = [13, 14, 15]
+    instr_mem_size = [32768, 65536, 131072]
     for index, i in enumerate([16, 32, 64]):
-      os.system(self.overlay_dir+'/dummy_repo/riscv_'+str(i)+'bram')
-      self.shell.cp_dir('common/riscv_bram', self.overlay_dir+'/dummy_repo/riscv_'+str(i)+'bram')
-      self.shell.write_lines(self.overlay_dir+'/dummy_repo/riscv_'+str(i)+'bram/run.sh',      self.shell.return_run_sh_list(self.prflow_params['Xilinx_dir'], 'dummy.tcl'), True)
-      self.shell.replace_lines(self.overlay_dir+'/dummy_repo/riscv_'+str(i)+'bram/src/picorv32_wrapper.v', {'parameter ADDR_BITS': 'parameter ADDR_BITS = '+str(instr_mem_addr_width[index])})
-      self.shell.replace_lines(self.overlay_dir+'/dummy_repo/riscv_'+str(i)+'bram/src/leaf.v', {'.NUM_LEAF_BITS(': '.NUM_LEAF_BITS('+self.prflow_params['addr_bits']+'),'})
+      file_list[-1] = './leaf_riscv.v'
+      self.shell.re_mkdir(self.overlay_dir+'/dummy_repo/riscv_'+str(i)+'bramI5O5')
+      self.shell.cp_dir(self.overlay_dir+'/src/leaf_riscv.v', self.overlay_dir+'/dummy_repo/riscv_'+str(i)+'bramI5O5')
+      self.shell.write_lines(self.overlay_dir+'/dummy_repo/riscv_'+str(i)+'bramI5O5/dummy.tcl', self.tcl.return_syn_page_tcl_list(fun_name, file_list, 'leaf_riscv'))
+      self.shell.write_lines(self.overlay_dir+'/dummy_repo/riscv_'+str(i)+'bramI5O5/run.sh',      self.shell.return_run_sh_list(self.prflow_params['Xilinx_dir'], 'dummy.tcl', self.prflow_params['back_end']), True)
+      self.shell.replace_lines(self.overlay_dir+'/dummy_repo/riscv_'+str(i)+'bramI5O5/leaf_riscv.v', {'parameter MEM_SIZE': '    parameter MEM_SIZE = '+str(instr_mem_size[index])+';'})
+      self.shell.replace_lines(self.overlay_dir+'/dummy_repo/riscv_'+str(i)+'bramI5O5/leaf_riscv.v', {'parameter ADDR_BITS': '    parameter ADDR_BITS = '+str(instr_mem_addr_width[index])+';'})
+      self.shell.replace_lines(self.overlay_dir+'/dummy_repo/riscv_'+str(i)+'bramI5O5/leaf_riscv.v', {'.NUM_LEAF_BITS(': '.NUM_LEAF_BITS('+self.prflow_params['addr_bits']+'),'})
 
 
   # main.sh will be used for local compilation
   def return_main_sh_list_local(self):
     lines_list = []
     lines_list.append('#!/bin/bash -e')
-    lines_list.append('source '+self.prflow_params['Xilinx_dir'])
+    if(self.prflow_params['back_end'] == 'slurm'):
+      lines_list.append('module load '+self.prflow_params['Xilinx_dir'])
+    else:
+      lines_list.append('source '+self.prflow_params['Xilinx_dir'])
+ 
     # compile the dummy logic for each page
     for index, i in enumerate([16, 32, 64]):
-      lines_list.append('cd ./dummy_repo/riscv_'+str(i)+'bram')
+      lines_list.append('cd ./dummy_repo/riscv_'+str(i)+'bramI5O5')
       lines_list.append('./run.sh&')
       lines_list.append('cd -')
-    #lines_list.append('cd ./dummy_repo/user_kernel')
-    #lines_list.append('./run.sh')
-    #lines_list.append('cd -')
+    lines_list.append('cd ./dummy_repo/user_kernel')
+    lines_list.append('./run.sh&')
+    lines_list.append('cd -')
     lines_list.append('vivado -mode batch -source project_syn2gen.tcl')
     lines_list.append('vivado -mode batch -source project_syn2dcp.tcl')
     lines_list.append('vivado -mode batch -source mk_overlay.tcl')
@@ -92,11 +106,19 @@ class overlay(gen_basic):
     # generating tcl file to create the overlay region vivado project
     self.shell.cp_dir('./common/script_src/project_syn_gen_'+self.prflow_params['board']+'.tcl ', self.overlay_dir +'/project_syn2gen.tcl')
 
-    self.shell.write_lines(self.overlay_dir+'/project_syn2dcp.tcl', self.tcl.return_syn2dcp_tcl_list(), False)
+    self.shell.write_lines(self.overlay_dir+'/project_syn2dcp.tcl', self.tcl.return_syn2dcp_tcl_list(self.prflow_params['back_end']), False)
     self.shell.write_lines(self.overlay_dir+'/mk_overlay.tcl', self.tcl.return_mk_overlay_tcl_list(), False)
-    self.shell.write_lines(self.overlay_dir+'/main.sh', self.return_main_sh_list_local(), True)
-
-
+    self.shell.write_lines(self.overlay_dir+'/run.sh', self.return_main_sh_list_local(), True)
+    self.shell.write_lines(self.overlay_dir+'/main.sh', self.shell.return_main_sh_list(\
+                                                       './run.sh', \
+                                                       self.prflow_params['back_end'], \
+                                                       'NONE',\
+                                                       'overlay', \
+                                                       self.prflow_params['grid'],  \
+                                                       self.prflow_params['email'], \
+                                                       self.prflow_params['mem'],  \
+                                                       '8'), True)
+                                                       #self.prflow_params['node']), True)
 
   def run(self):
     # make work directory

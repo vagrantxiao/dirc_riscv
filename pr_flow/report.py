@@ -38,7 +38,7 @@ class report(gen_basic):
           #run_time = re.findall(r"\d+", line)
           run_time = line.split()
           time_report_dict[fun_name] += '\t' + run_time[1]
-          time_data_dict[fun_name].append(int(run_time[1]))
+          time_data_dict[fun_name].append(run_time[1])
         file_in.close()
       except:
         print ('Something is wrong with '+file_name) 
@@ -55,8 +55,8 @@ class report(gen_basic):
         file_in.close()
         for i in range(4): time_report_dict[fun_name] += '\t' + str(run_time_list[i])
         total_time = 0
-        for i in range(6): total_time += time_data_dict[fun_name][i]
-        run_time_list.append(total_time)
+        for i in range(6): total_time += float(time_data_dict[fun_name][i])
+        run_time_list.append(float(total_time))
         time_report_dict[fun_name] += '\t' + str(run_time_list[5])
         time_report_dict[fun_name] += '\t\t' + str(run_time_list[4])
       except:

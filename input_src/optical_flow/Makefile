@@ -18,7 +18,7 @@ CXX=g++
 VPATH=src
 
 all: main
-	./main -p ~/rosetta/optical-flow/datasets/current/ -o ~/rosetta/optical-flow/datasets/current/out.flo > out.log
+	./main -p ./datasets/current/ -o ./datasets/current/out.flo 
 
 main:$(OPERATORS_OBJ) $(HOST_OBJ)
 	$(CXX) $(CFLAGS) -o main $^ 
@@ -31,7 +31,7 @@ $(OPERATORS_OBJ):%.o:./operators/%.cpp
 	$(CXX) $(CFLAGS) -o $@ -c $^
 
 run: main
-	./main -p ~/rosetta/optical-flow/datasets/current/ -o ~/rosetta/optical-flow/datasets/current/out.flo
+	./main -p ./datasets/current/ -o ./datasets/current/out.flo
 
 install:
 	echo hello
