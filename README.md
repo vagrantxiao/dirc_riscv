@@ -24,7 +24,7 @@ both with local macine and GCP.
 To use DIRC to develop the benchmarks, the application code should be written in the form 
 of dataflow graph. We take the optical flow example as below.
 
-![Figure1: DIRC Flow and C++ Templete Code](images/opticalflow_origin.jpg)  
+![Figure 1: Dataflow Computing Graph for Optical Flow](images/opticalflow_origin.jpg)  
 *(These images aren't coming up inline in the anonymizer; click on the link text to see the image.)*
 
 
@@ -54,7 +54,8 @@ compilation. It usually takes around seconds.
 
 
 
-![](images/DIRC_system.jpg)
+![Figure 2: DIRC Flow and C++ Templete Code](images/DIRC_system.jpg)
+*(These images aren't coming up inline in the anonymizer; click on the link text to see the image.)*
 
 
 
@@ -127,7 +128,8 @@ INCLUDE=-I /opt/Xilinx/Vivado/2018.2/include
 
 3. type **make** do simulate the source C++ code with gcc. You should see the results as below.
 
-![](images/c_simulation.png)
+![Figure 3: C++ Simulation in the Terminal](images/c_simulation.png)
+*(These images aren't coming up inline in the anonymizer; click on the link text to see the image.)*
 
 
 ## 5 Tutorial 2: Initial Hardware Implementation
@@ -138,7 +140,8 @@ to hardware page.
 page, but currently, no hardware implementation details are available.
 The overlay size is as below.
 
-![](images/overlay_HW.jpg)
+![Figure 4: Hardware Overlay Details](images/overlay_HW.jpg)
+*(These images aren't coming up inline in the anonymizer; click on the link text to see the image.)*
 
 3. As you set the vivado properly, we need to set the **Xilinx_dir**, which represents
 the vivado installtion diretory in 
@@ -165,7 +168,8 @@ consumes 56,683 LUTs, and is too big
 to be mapped. By typing **make report**, you can see the detailed implementation information in the terminal.
 You can also read the report under **./workspace/report**.
 
-![](images/report1.png)
+![Figure 5: Initial Implementation Report](images/report1.png)
+*(These images aren't coming up inline in the anonymizer; click on the link text to see the image.)*
 
 
 
@@ -178,7 +182,8 @@ To make sure the RISC-V core can run 'ap_int.h' and 'ap_fixed.h', the
 smallest bram size it 65536 Bytes. We could easily map 9 opertors out of 20
 pre-load 16 RISC-V cores.
 
-![](images/overlay_riscv.jpg)
+![Figure 6: Overlay Pre-loaded with RISC-V Cores](images/overlay_riscv.jpg)
+*(These images aren't coming up inline in the anonymizer; click on the link text to see the image.)*
 
 2. We are going to switch '**data_redir**' page to RISC-V. To achieve
 this goal, we only need to avoid downloading any partial bitstreams to
@@ -201,7 +206,8 @@ RISC-V core.
 5. By typing **make -j$(nproc)**, the RISC-V elf file will be compiled automatically.
 Type **make report**, you can see the comipile time details in the terminal.
 
-![](images/report2.png)
+![Figure 7: RISC-V Cores Implementation](images/report2.png)
+*(These images aren't coming up inline in the anonymizer; click on the link text to see the image.)*
 
 6. As all the RISC-V ELF files are ready, we can launch the soft-run with Xilinx SDK. 
 
@@ -214,23 +220,28 @@ Type **make report**, you can see the comipile time details in the terminal.
 7. Launch sdk 2018.2, specify the workspace directory to the DIR with the 'floorplan_static_wrapper.hdf'
 as below.
 
-![](images/sdk_dir.png)
+![Figure 8: SDK Workspace Directory](images/sdk_dir.png)
+*(These images aren't coming up inline in the anonymizer; click on the link text to see the image.)*
 
 8. Create an application projets as below.
 
-![](images/create_prj.png)
+![Figure 9: Create SDK Projects](images/create_prj.png)
+*(These images aren't coming up inline in the anonymizer; click on the link text to see the image.)*
 
 9. Click **new** to specify the hdf file.
 
-![](images/hdf.png)
+![Figure 10: Link the Right Hardware Platform](images/hdf.png)
+*(These images aren't coming up inline in the anonymizer; click on the link text to see the image.)*
 
 10. Click **new** to specify the hdf file directory as below.
 
-![](images/hdf_dir.png)
+![Figure 11: Link the Right Path](images/hdf_dir.png)
+*(These images aren't coming up inline in the anonymizer; click on the link text to see the image.)*
 
 11. Create the application with the same name as the benchmark.
 
-![](images/sdk_prj_name.png)
+![Figure 12: Choose the Right Application Name](images/sdk_prj_name.png)
+*(These images aren't coming up inline in the anonymizer; click on the link text to see the image.)*
 
 12. Type '**Make config**", the instr_data will make copied to Vitis project,
 and the cpp source will also be updated.
@@ -239,7 +250,8 @@ and the cpp source will also be updated.
 direcotry and name, you should see the source files are updated automatically by 
 previous step.
 
-![](images/refresh.png)
+![Figure 13: Refresh the Source Code](images/refresh.png)
+*(These images aren't coming up inline in the anonymizer; click on the link text to see the image.)*
 
 
 
@@ -247,7 +259,8 @@ previous step.
 and launch the SDK project to run the project. You can see the results
 with one page running on the RISC-V core.
 
-![](images/riscv_results.png)
+![Figure 14: Initial RISC-V Implementation Results](images/riscv_results.png)
+*(These images aren't coming up inline in the anonymizer; click on the link text to see the image.)*
 
 
 
@@ -277,7 +290,8 @@ as below. The **print_str** and **print_dec** are the functions in the RISC-V fi
 information as below. We can see it takes around 18 seconds to process one rows of
 frames. We will use faster RISC-V cores to accelerate the image processing in the future.
 
-![](images/debugging.png)
+![Figure 15: Printing the Debugging Information](images/debugging.png)
+*(These images aren't coming up inline in the anonymizer; click on the link text to see the image.)*
 
 
 ## 8 Tutorial 5: Map all Operators to Hardware
@@ -301,7 +315,8 @@ functionality.
 After decomposing and merging the operators, we have 16  operators that all fit
 on the pages on our overlay, and the entire design runs on FPGA logic.  
 
-![](images/opticalflow_final.png)
+![Figure 16: Final Optical Flow Dataflow Computing Graph](images/opticalflow_final.png)
+*(These images aren't coming up inline in the anonymizer; click on the link text to see the image.)*
 
 
 3. We have our decomposed C++ code under [./input_src/optical_flow_final/](./input_src/optical_flow_final).
