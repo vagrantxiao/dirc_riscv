@@ -25,7 +25,7 @@ To use DIRC to develop the benchmarks, the application code should be written in
 of dataflow graph. We take the optical flow example as below.
 
 ![Figure 1: Dataflow Computing Graph for Optical Flow](images/opticalflow_origin.jpg)  
-*(These images aren't coming up inline in the anonymizer; click on the link text to see the image.)*
+*(These images aren't coming up inline in the anonymizer; click on the [link](images/opticalflow_origin.jpg) text to see the image.)*
 
 
 
