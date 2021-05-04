@@ -2,7 +2,7 @@
 <configuration>
   <spec name = "riscv_dir"          value = "/opt/riscv32" />
   <!--specifications for pr_flow tool-->
-  <spec name = "Xilinx_dir"         value = "/opt/Xilinx/Vivado/2018.2/settings64.sh" />
+  <spec name = "Xilinx_dir"         value = "/apps/xilinx/Vivado/2020.2/settings64.sh" />
   <!--spec name = "Xilinx_dir"         value = "/scratch/unsafe/SDSoC/SDx/2018.2/settings64.sh" -->
   <spec name = "board" value = "zcu102" />
   <!--spec name = "board"              value = "u96" -->
@@ -28,9 +28,10 @@
   <spec name = "grid"               value = "70s" />
   <spec name = "maxThreads"         value = "8" />
   <spec name = "maxJobs"            value = "32" />
-  <spec name = "node"               value = "4" />
-  <spec name = "back_end"           value = "local" />
-  <spec name = "mem"                value = "7500mb" />
+  <spec name = "node"               value = "1" />
+  <spec name = "back_end"           value = "slurm" />
+  <!--spec name = "back_end"           value = "local" -->
+  <spec name = "mem"                value = "7000mb" />
   <spec name = "PR_mode"            value = "noquick" />
   <spec name = "packet_bits"        value = "49" />
   <spec name = "addr_bits"          value = "5" />

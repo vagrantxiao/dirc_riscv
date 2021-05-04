@@ -8,9 +8,9 @@
 #prj_name=bnn
 #prj_name=digit_reg
 #prj_name=spam_filter
-prj_name=optical_flow
+#prj_name=optical_flow
 #prj_name=optical_flow_final
-#prj_name=rendering
+prj_name=rendering
 #prj_name=face_detection
 
 
@@ -83,7 +83,7 @@ $(ws_overlay)/overlay.dcp: $(ws_overlay)/src
 	cp -rf ./common/overlay/riscv_bit_lib ./workspace/F001_overlay
 	cp -rf ./common/verilog_src ./workspace/F001_overlay/src
 	cp -rf ./common/overlay/size_table/* ./workspace/F001_overlay
-	cp -rf ./common/overlay/overlay.dcp ./workspace/F001_overlay
+	cp -rf ./common/overlay/dcp_lib/* ./workspace/F001_overlay
 	cp -rf ./common/overlay/main.bit ./workspace/F001_overlay
 	touch ./workspace/F001_overlay/*
 

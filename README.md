@@ -25,7 +25,7 @@ To use DIRC to develop the benchmarks, the application code should be written in
 of dataflow graph. We take the optical flow example as below.
 
 ![Figure 1: Dataflow Computing Graph for Optical Flow](images/opticalflow_origin.jpg)  
-*(These images aren't coming up inline in the anonymizer; click on the [link](images/opticalflow_origin.jpg) text to see the image.)*
+*(These images aren't coming up inline in the anonymizer; click on the link text to see the image.)*
 
 
 
@@ -346,10 +346,128 @@ Make -j$(nproc)
 Type '**Make report**', you can find the compile and resource report under 
 'workspace/report'.
 
+## 7 Google Cloud Platform Compilation
+1. You need a goole account to use Google Cloud Platform (GCP) from compilation.
+For personal use, you should have $300 free trial when you register our GCP account.
+2. Click **Console** on the top right, and create a project.
+
+![Figure 17: Console](images/Console.jpg)
+*(These images aren't coming up inline in the anonymizer; click on the link text to see the image.)*
 
 
+![Figure 18: Create Project](images/create_prj.jpg)
+*(These images aren't coming up inline in the anonymizer; click on the link text to see the image.)*
 
 
+3. Click **Compute Engine->VM instances**. 
 
+![Figure 19: See VM Instances](images/VM_inst.jpg)
+*(These images aren't coming up inline in the anonymizer; click on the link text to see the image.)*
+
+4. For the first time, you may need to enable the API function.
+
+![Figure 20: Enable API](images/enable_API.png)
+*(These images aren't coming up inline in the anonymizer; click on the link text to see the image.)*
+
+
+5. [This](https://github.com/SchedMD/slurm-gcp) github repo explains how to set up
+slurm computation clusters. For simplicity, we just use GCP marketplace to create
+our slurm clusters. Click **Launch**.
+
+![Figure 21: Create Slurm Project through marketplace](images/market_launch.png)
+*(These images aren't coming up inline in the anonymizer; click on the link text to see the image.)*
+
+
+6. Fill out the project names.
+
+![Figure 22: Specify the Names](images/deployment_name.png)
+*(These images aren't coming up inline in the anonymizer; click on the link text to see the image.)*
+
+7. Check **Login External IP** and **Compute Node External IP**.
+
+![Figure 23: Check External IP Option](images/IP.png)
+*(These images aren't coming up inline in the anonymizer; click on the link text to see the image.)*
+
+8. Increase the **Slurm Controller Boot Disk Size** to 400GB.
+
+![Figure 24: Increase Controller Boot Disk Size](images/controller.png)
+*(These images aren't coming up inline in the anonymizer; click on the link text to see the image.)*
+
+9. For **Slurm Compute Partition 1**, you can set **Maximum Instance Count** to 100,
+and **Number of static nodes to create** to 1 for future use.
+
+![Figure 25: Set Nodes' Features](images/partition1.png)
+*(These images aren't coming up inline in the anonymizer; click on the link text to see the image.)*
+
+10. For this tutorial, 1 partition is enough. Click **Deploy**.
+11. Click **Compute Engine->VM instances**. You should see 3 nodes are up (contorller, login0 and compute-0-0).
+
+![Figure 26: Slurm Nodes](images/nodes.png)
+*(These images aren't coming up inline in the anonymizer; click on the link text to see the image.)*
+
+12. Next, we need to install Xilinx Vitis Tool chain on GCP. We recommend to use GUI
+mode to install xilinx tools. We will install the controller node with VNC, so that
+users can log into the cluster with graphic mode.
+
+13. As slurm cluster use CentOS7 as the grid machine, [this video](https://www.youtube.com/watch?v=psWg-kIPs3U)
+and [this link](https://docs.microsoft.com/en-us/archive/blogs/microsoft_azure_guide/how-to-enable-desktop-experience-and-enable-rdp-for-a-centos-7-vm-on-microsoft-azure)
+will be usefull for you. For simplicity, we will also walk you though the steps to set up VNC on the controller node.
+
+14. Click **SSH** to log into the controller from our browser. Execute the commands below in the terminal.
+It may take a while to execute all the commands. Click yes when you are prompted to 
+make deicisions.
+
+```c
+sudo -s
+rpm -Uvh http://li.nux.ro/download/nux/dextop/el7/x86_64/nux-dextop-release-0-1.el7.nux.noarch.rpm
+yum groupinstall "GNOME Desktop" "Graphical Administration Tools"
+ln -sf /lib/systemd/system/runlevel5.target /etc/systemd/system/default.target
+yum -y install xrdp tigervnc-serversystemctl 
+start xrdp.service 
+netstat -antup | grep xrdp
+systemctl enable xrdp.service
+```
+15. Next, execute the commands below in the terminal.
+If you get errors like **firewallD is not running**, go to step 16.
+Otherwise, go to step 17.
+
+```c
+firewall-cmd --permanent --zone=public --add-port=3389/tcp
+firewall-cmd --reload
+```
+16. [This link](https://www.liquidweb.com/kb/how-to-start-and-enable-firewalld-on-centos-7/)
+ shows you how to set launch the firewall. Or you can execute commands below. 
+Then go back to step 15 to config the firewall.
+
+```c
+systemctl enable firewalld
+systemctl start firewalld
+systemctl status firewalld
+```
+
+17. Set a root password for remote login.
+
+```c
+passwd
+```
+
+18. You have set up the VNC on the controller size. Now download a Microsoft Remote Desktop
+on our local machine. Type in the IP address of the GCP controller, and launch 
+the remote control with ID:root and password you just set. Now you have GUI for 
+the controller machine. Install Xilinx Vitis 2020.2 to /apps directory.
+
+![Figure 27: Log into Controller Machine](images/IP_controller.jpg)
+*(These images aren't coming up inline in the anonymizer; click on the link text to see the image.)*
+
+
+19. After Vitis is installed, you can change the ./common/configure/configure.xml
+file's specifications as below.
+
+```c
+<spec name = "Xilinx_dir"         value = "/apps/xilinx/Vivado/2020.2/settings64.sh" />
+<spec name = "back_end"           value = "slurm" />
+```
+20. Log into the 'login0' machine, and type **make** to launch the GCP compilation.
+After the compilation is done, type **make report** to see the compilation results.
 
 

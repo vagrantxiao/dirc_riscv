@@ -195,7 +195,7 @@ class syn(gen_basic):
     self.shell.write_lines(self.syn_dir+'/'+operator+'/leaf.v', self.verilog.return_page_v_list(page_num, operator, input_num, output_num, True, True), False)
     if riscv_bit == 'empty':
       if self.prflow_params['back_end'] == 'slurm':
-        self.shell.replace_lines(self.syn_dir+'/'+operator+'/run.sh', {'vivado': 'module load '+self.prflow_params['Xilinx_dir']+'\nvivado -mode batch -source syn_page.tcl\n'} )
+        self.shell.replace_lines(self.syn_dir+'/'+operator+'/run.sh', {'vivado': 'source '+self.prflow_params['Xilinx_dir']+'\nvivado -mode batch -source syn_page.tcl\n'} )
       else:
         self.shell.replace_lines(self.syn_dir+'/'+operator+'/run.sh', {'vivado': 'source '+self.prflow_params['Xilinx_dir']+'\nvivado -mode batch -source syn_page.tcl\n'} )
       self.shell.replace_lines(self.syn_dir+'/'+operator+'/src/picorv32_wrapper.v', {'parameter IS_TRIPLE': 'parameter IS_TRIPLE = '+str(is_triple)+','})

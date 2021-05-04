@@ -20,9 +20,8 @@ static void rasterization2_odd (
 		hls::stream<ap_uint<32> > & Output_2
 		)
 {
-#pragma HLS INTERFACE ap_hs port=Input_1
-#pragma HLS INTERFACE ap_hs port=Output_1
-#pragma HLS INTERFACE ap_hs port=Output_2
+
+
   #pragma HLS INLINE off
 	bit16 i = 0;
 	bit16 i_top = 0;
@@ -310,12 +309,12 @@ void rasterization2_m (
 		hls::stream<ap_uint<32> > & Output_4
 		)
 {
-#pragma HLS INTERFACE ap_hs port=Input_1
-#pragma HLS INTERFACE ap_hs port=Input_2
-#pragma HLS INTERFACE ap_hs port=Output_1
-#pragma HLS INTERFACE ap_hs port=Output_2
-#pragma HLS INTERFACE ap_hs port=Output_3
-#pragma HLS INTERFACE ap_hs port=Output_4
+#pragma HLS INTERFACE axis register port=Input_1
+#pragma HLS INTERFACE axis register port=Input_2
+#pragma HLS INTERFACE axis register port=Output_1
+#pragma HLS INTERFACE axis register port=Output_2
+#pragma HLS INTERFACE axis register port=Output_3
+#pragma HLS INTERFACE axis register port=Output_4
 
 
 	rasterization2_odd(

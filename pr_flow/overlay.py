@@ -76,10 +76,10 @@ class overlay(gen_basic):
   def return_main_sh_list_local(self):
     lines_list = []
     lines_list.append('#!/bin/bash -e')
-    if(self.prflow_params['back_end'] == 'slurm'):
-      lines_list.append('module load '+self.prflow_params['Xilinx_dir'])
-    else:
-      lines_list.append('source '+self.prflow_params['Xilinx_dir'])
+    # if(self.prflow_params['back_end'] == 'slurm'):
+    #   lines_list.append('module load '+self.prflow_params['Xilinx_dir'])
+    # else:
+    lines_list.append('source '+self.prflow_params['Xilinx_dir'])
  
     # compile the dummy logic for each page
     for index, i in enumerate([16, 32, 64]):

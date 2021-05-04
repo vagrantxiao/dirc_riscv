@@ -106,7 +106,8 @@ class _shell:
     out_file = []
     out_file.append('#!/bin/bash -e')
     if (back_end == 'slurm'):
-      out_file.append('module load ' + vivado_dir)
+      # out_file.append('module load ' + vivado_dir)
+      out_file.append('source ' + vivado_dir)
       out_file.append('srun vivado -mode batch -source  ' + tcl_file)
     else:
       out_file.append('source ' + vivado_dir)
@@ -118,11 +119,12 @@ class _shell:
     out_file = []
     out_file.append('#!/bin/bash -e')
     if (back_end == 'slurm'):
-      out_file.append('module load ' + vivado_dir)
-      out_file.append('srun vivado_hls -f ' + tcl_file)
+      # out_file.append('module load ' + vivado_dir)
+      out_file.append('source ' + vivado_dir)
+      out_file.append('srun vitis_hls -f ' + tcl_file)
     else:
       out_file.append('source ' + vivado_dir)
-      out_file.append('vivado_hls -f ' + tcl_file)
+      out_file.append('vitis_hls -f ' + tcl_file)
     return out_file 
 
   def return_main_sh_list(self, run_file='run.sh', back_end='qsub', hold_jid='NONE', name='NONE', q='70s', email='qsub@qsub.com', MEM='2G', node_num='1'):
@@ -319,14 +321,14 @@ class _verilog:
       lines_list.append('        .ap_idle(),')
       lines_list.append('        .ap_ready(),')
       for i in range(int(input_num),0,-1): 
-        lines_list.append('        .Input_'+str(i)+'_V_V(dout_leaf_interface2user_'+str(i)+'),')
-        lines_list.append('        .Input_'+str(i)+'_V_V_ap_vld(vld_interface2user_'+str(i)+'),')
-        lines_list.append('        .Input_'+str(i)+'_V_V_ap_ack(ack_user2interface_'+str(i)+'),')
+        lines_list.append('        .Input_'+str(i)+'_V_TDATA(dout_leaf_interface2user_'+str(i)+'),')
+        lines_list.append('        .Input_'+str(i)+'_V_TVALID(vld_interface2user_'+str(i)+'),')
+        lines_list.append('        .Input_'+str(i)+'_V_TREADY(ack_user2interface_'+str(i)+'),')
       for i in range(int(output_num),0,-1): 
-        lines_list.append('        .Output_'+str(i)+'_V_V(din_leaf_user2interface_'+str(i)+'),')
-        lines_list.append('        .Output_'+str(i)+'_V_V_ap_vld(vld_user2interface_'+str(i)+'),')
-        lines_list.append('        .Output_'+str(i)+'_V_V_ap_ack(ack_interface2user_'+str(i)+'),')
-      lines_list.append('        .ap_rst(reset)')
+        lines_list.append('        .Output_'+str(i)+'_V_TDATA(din_leaf_user2interface_'+str(i)+'),')
+        lines_list.append('        .Output_'+str(i)+'_V_TVALID(vld_user2interface_'+str(i)+'),')
+        lines_list.append('        .Output_'+str(i)+'_V_TREADY(ack_interface2user_'+str(i)+'),')
+      lines_list.append('        .ap_rst_n(!reset)')
       lines_list.append('        );  ')
     lines_list.append('    ')
     lines_list.append('endmodule')
@@ -513,7 +515,7 @@ class _tcl:
 
     return lines_list
 
-  def return_impl_tcl_list(self, fun_name, num, IsNet=False):
+  def return_impl_tcl_list(self, fun_name, num, overlay='overlay.dcp', IsNet=False):
     lines_list = []
     lines_list.append('set logFileId [open ./runLogImpl_'+fun_name+'.log "w"]')
     #lines_list.append('set_param general.maxThreads ' + self.prflow_params['maxThreads'] + ' ')
@@ -523,12 +525,12 @@ class _tcl:
     lines_list.append('## read_checkpoint ##')
     lines_list.append('#####################')
     lines_list.append('set start_time [clock seconds]')
-    lines_list.append('open_checkpoint ../../F001_overlay/overlay.dcp')
+    lines_list.append('open_checkpoint ../../F001_overlay/'+overlay)
     if IsNet:
       lines_list.append("update_design -cell floorplan_static_i/net" + str(num) + "/inst -black_box")
       lines_list.append("read_checkpoint -cell floorplan_static_i/net" + str(num) + "/inst ../../F003_syn_" + self.prflow_params['benchmark_name'] + '/net' + str(num) + "/net" + str(num) + "_netlist.dcp")
     else:
-      lines_list.append("update_design -cell floorplan_static_i/leaf_empty_" + str(num) + "/inst -black_box")
+      lines_list.append("update_design -cell floorplan_static_i/leaf_empty_" + str(num) + "/inst -black_box -quiet")
       lines_list.append("read_checkpoint -cell floorplan_static_i/leaf_empty_" + str(num) + "/inst ../../F003_syn_" + self.prflow_params['benchmark_name'] + '/' + fun_name + "/page_netlist.dcp")
  
     lines_list.append("set end_time [clock seconds]")
